@@ -29,6 +29,8 @@ class AuthController extends GetxController {
   final otpController = TextEditingController();
   DateTime? selectedDate;
 
+  RxBool isLoading = false.obs;
+
   Future<void> getAuthToken() async {
     Map<String, dynamic> body = {
       "username": globalUsername,
@@ -199,7 +201,8 @@ class AuthController extends GetxController {
     final loginResponse = await apiService.postWithResponse(
       '$accountsLink/$email/login',
       {"emailAddress": email, "password": toBase64(password)},
-      false,showResult: true
+      false,
+      showResult: true,
     );
     log('login res code : ${loginResponse?.statusCode}');
 
@@ -430,7 +433,28 @@ class AuthController extends GetxController {
       }
     } else {
       dialogService.hideLoading(context);
-      customSnackBars.showFailureSnackBar(title: 'Error', message: 'Invalid Password');
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: 'Invalid Password',
+      );
+    }
+  }
+
+  Future<bool> checkUserName({required String userName}) async {
+    isLoading(true);
+    final response = await apiService.get(
+      '$accountsLink/$userName/check-username',
+      false,
+      isAuth: true,
+    );
+    if (response.$1 != null &&
+        response.$2 != null &&
+        (response.$2 == 200 || response.$2 == 201)) {
+      isLoading(false);
+      return true;
+    } else {
+      isLoading(false);
+      return false;
     }
   }
 
