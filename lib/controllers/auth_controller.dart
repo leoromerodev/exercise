@@ -447,9 +447,14 @@ class AuthController extends GetxController {
       false,
       isAuth: true,
     );
-    if (response.$1 != null &&
-        response.$2 != null &&
-        (response.$2 == 200 || response.$2 == 201)) {
+    final responseData = response.$1;
+    final statusCode = response.$2;
+    log('Response Data : $responseData');
+    
+    if (responseData != null && 
+        statusCode != null && 
+        (statusCode == 200 || statusCode == 201) &&
+        responseData['data'] == true) {
       isLoading(false);
       return true;
     } else {
