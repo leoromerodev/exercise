@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
@@ -9,6 +10,10 @@ import 'package:pinput/pinput.dart';
 
 class ForgotPasswordVerificationScreen extends StatelessWidget {
   ForgotPasswordVerificationScreen({super.key});
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
+  
   final _formKey = GlobalKey<FormState>();
 
   @override

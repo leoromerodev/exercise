@@ -1,11 +1,10 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:heavek/constants/endpoints.dart';
 import 'package:heavek/models/user/user_model.dart';
+import 'package:heavek/services/user_service/user_service.dart';
 import 'package:heavek/utils/functions.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/screens/auth/auth_screen.dart';
@@ -31,16 +30,15 @@ class AuthController extends GetxController {
 
   RxBool isLoading = false.obs;
 
+  // Get reference to UserService
+  final UserService _userService = UserService.instance;
+
   Future<void> getAuthToken() async {
-    Map<String, dynamic> body = {
-      "username": globalUsername,
-      "secret": globalUSecret,
-    };
-    final response = await apiService.postExpectString(
-      authTokenUrl,
-      body,
-      true,
+    final response = await _userService.getAuthToken(
+      username: globalUsername!,
+      secret: globalUSecret!,
     );
+    
     if (response != null) {
       await localStorageService.writeString(key: userTokenKey, value: response);
     }
@@ -52,11 +50,11 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.get('$accountsLink/$email/status', false);
-    if (response.$2 != null &&
-        response.$1 != null &&
-        (response.$2 == 200 || response.$2 == 201)) {
-      int data = response.$1?['data'];
+    
+    final (data, statusCode) = await _userService.checkAccountStatus(email: email);
+    
+    if (statusCode != null && data != null &&
+        (statusCode == 200 || statusCode == 201)) {
       if (data == 1) {
         //AccountExist
         dialogService.hideLoading(context);
@@ -90,42 +88,46 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/sign-up-password',
-      {"emailAddress": email, "password": toBase64(password)},
-      false,
+    
+    // Clear any existing user data to prevent old data persistence
+    clearUserGlobalState();
+    
+    // Step 1: Sign up with email and password
+    final (signupSuccess, signupStatusCode) = await _userService.signupWithEmailPassword(
+      email: email,
+      password: toBase64(password),
     );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      final loginResponse = await apiService.postWithResponse(
-        '$accountsLink/$email/login',
-        {"emailAddress": email, "password": toBase64(password)},
-        false,
+    
+    if (signupSuccess && signupStatusCode != null &&
+        (signupStatusCode == 200 || signupStatusCode == 201)) {
+      
+      // Step 2: Login and get auth token
+      final (authToken, loginStatusCode) = await _userService.loginAndGetAuthToken(
+        email: email,
+        password: toBase64(password),
       );
 
-      if (loginResponse != null &&
-          (loginResponse.statusCode == 200 ||
-              loginResponse.statusCode == 201)) {
-        Map<String, dynamic> authData = jsonDecode(loginResponse.body);
-        String authToken = authData['data'];
+      if (authToken != null && loginStatusCode != null &&
+          (loginStatusCode == 200 || loginStatusCode == 201)) {
+        
+        // Store auth token
         await localStorageService.writeString(
           key: userAuthTokenKey,
           value: authToken,
         );
 
-        final profileResponse = await apiService.get(
-          '$accountsLink/$email/user-profile',
-          false,
-          isAuth: true,
+        // Step 3: Get user profile
+        final userProfile = await _userService.getUserProfileWithAuth(
+          email: email,
         );
-        if (profileResponse.$1 != null &&
-            profileResponse.$2 != null &&
-            (profileResponse.$2 == 200 || profileResponse.$2 == 201)) {
-          userModelGlobal.value = UserModel.fromMap(
-            profileResponse.$1?['data'],
-          );
+        
+        if (userProfile != null && 
+            (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+          userModelGlobal.value = userProfile;
+          
           if (userModelGlobal.value?.firstName == null ||
               userModelGlobal.value?.screenName == null) {
+            dialogService.hideLoading(context);
             Get.offAll(() => CompleteProfileScreen());
           } else {
             dialogService.hideLoading(context);
@@ -153,15 +155,14 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/verify',
-      {"emailAddress": email, "validationCode": otp},
-      false,
+    
+    final (data, baseModel) = await _userService.verifyEmailOtp(
+      email: email,
+      otp: otp,
     );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> decodedRes = jsonDecode(response.body);
-      int data = decodedRes['data'];
+    
+    if (baseModel != null && data != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 1) {
         // Verification Success
         dialogService.hideLoading(context);
@@ -169,6 +170,7 @@ class AuthController extends GetxController {
           title: 'Success',
           message: 'Code Verified Successfully.',
         );
+        otpController.clear();
         Get.offAll(() => SetPasswordScreen());
       } else if (data == 2) {
         // Invalid code or email
@@ -198,34 +200,40 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final loginResponse = await apiService.postWithResponse(
-      '$accountsLink/$email/login',
-      {"emailAddress": email, "password": toBase64(password)},
-      false,
-      showResult: true,
+    
+    // Clear any existing user data to prevent old data persistence
+    clearUserGlobalState();
+    
+    // Step 1: Login and get auth token
+    final (authToken, loginStatusCode) = await _userService.loginAndGetAuthToken(
+      email: email,
+      password: toBase64(password),
     );
-    log('login res code : ${loginResponse?.statusCode}');
+    
+    log('login res code : $loginStatusCode');
 
-    if (loginResponse != null &&
-        (loginResponse.statusCode == 200 || loginResponse.statusCode == 201)) {
-      Map<String, dynamic> authData = jsonDecode(loginResponse.body);
-      String authToken = authData['data'];
+    if (authToken!= null && loginStatusCode != null &&
+        (loginStatusCode == 200 || loginStatusCode == 201)) {
+      
+      // Store auth token
       await localStorageService.writeString(
         key: userAuthTokenKey,
         value: authToken,
       );
 
-      final profileResponse = await apiService.get(
-        '$accountsLink/$email/user-profile',
-        false,
-        isAuth: true,
+      // Step 2: Get user profile
+      final userProfile = await _userService.getUserProfileWithAuth(
+        email: email,
       );
-      if (profileResponse.$1 != null &&
-          profileResponse.$2 != null &&
-          (profileResponse.$2 == 200 || profileResponse.$2 == 201)) {
-        userModelGlobal.value = UserModel.fromMap(profileResponse.$1?['data']);
+      
+      if (userProfile != null &&
+          (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+        userModelGlobal.value = userProfile;
+        
         if (userModelGlobal.value?.firstName == null ||
             userModelGlobal.value?.screenName == null) {
+          passwordController.clear();
+          dialogService.hideLoading(context);
           Get.offAll(() => CompleteProfileScreen());
         } else {
           dialogService.hideLoading(context);
@@ -253,16 +261,13 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/${user.email}/profile',
-      user.toMap(),
-      false,
-      isAuth: true,
-    );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> profileResponse = jsonDecode(response.body);
-      userModelGlobal.value = UserModel.fromMap(profileResponse);
+    
+    final userProfile = await _userService.completeUserProfile(user: user);
+
+    if (userProfile != null && 
+        (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+      userModelGlobal.value = userProfile;
+      
       dialogService.hideLoading(context);
       customSnackBars.showSuccessSnackBar(
         title: 'Success',
@@ -272,6 +277,17 @@ class AuthController extends GetxController {
       Get.offAll(() => BottomNavBar());
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from UserModel (since it inherits from BaseModel)
+      String errorMessage = 'Profile update failed';
+      if (userProfile != null && userProfile.messages.isNotEmpty) {
+        errorMessage = userProfile.messages.join('\n');
+      }
+      
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: errorMessage,
+      );
     }
   }
 
@@ -280,13 +296,11 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/resend-verification-code',
-      {"emailAddress": email},
-      false,
-    );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
+    
+    final baseModel = await _userService.resendOtp(email: email);
+    
+    if (baseModel != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       dialogService.hideLoading(context);
       customSnackBars.showSuccessSnackBar(
         title: 'Success',
@@ -294,11 +308,27 @@ class AuthController extends GetxController {
       );
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from BaseModel if available
+      String errorMessage = 'Failed to resend OTP';
+      if (baseModel != null && baseModel.messages.isNotEmpty) {
+        errorMessage = baseModel.messages.join('\n');
+      }
+      
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: errorMessage,
+      );
     }
   }
 
   Future<void> logout() async {
+    // Clear stored auth token
     await localStorageService.deleteKey(key: userAuthTokenKey);
+    
+    // Clear global user model to prevent old data persistence
+    userModelGlobal.value = null;
+    
     Get.offAll(() => AuthScreen());
   }
 
@@ -307,14 +337,11 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponseWithoutBody(
-      '$accountsLink/$email/forgot-password',
-      false,
-    );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> res = jsonDecode(response.body);
-      int data = res['data'];
+    
+    final (data, baseModel) = await _userService.sendForgotPasswordEmail(email: email);
+    
+    if (baseModel != null && data != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 2) {
         dialogService.hideLoading(context);
         customSnackBars.showSuccessSnackBar(
@@ -331,6 +358,17 @@ class AuthController extends GetxController {
       }
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from BaseModel if available
+      String errorMessage = 'Error sending email, Try again!';
+      if (baseModel != null && baseModel.messages.isNotEmpty) {
+        errorMessage = baseModel.messages.join('\n');
+      }
+      
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: errorMessage,
+      );
     }
   }
 
@@ -339,15 +377,11 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/forgot-password/resend-verification-code',
-      {"emailAddress": email},
-      false,
-    );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> res = jsonDecode(response.body);
-      bool data = res['data'];
+    
+    final (data, baseModel) = await _userService.resendForgotPasswordEmail(email: email);
+    
+    if (baseModel != null && data != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data) {
         dialogService.hideLoading(context);
         customSnackBars.showSuccessSnackBar(
@@ -363,6 +397,17 @@ class AuthController extends GetxController {
       }
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from BaseModel if available
+      String errorMessage = 'Error sending email, Try again!';
+      if (baseModel != null && baseModel.messages.isNotEmpty) {
+        errorMessage = baseModel.messages.join('\n');
+      }
+      
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: errorMessage,
+      );
     }
   }
 
@@ -373,21 +418,21 @@ class AuthController extends GetxController {
   }) async {
     log('otp : $otp');
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/forgot-password/verify',
-      {"emailAddress": email, "validationCode": otp},
-      false,
+    
+    final (data, baseModel) = await _userService.verifyForgotPasswordOtp(
+      email: email,
+      otp: otp,
     );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> res = jsonDecode(response.body);
-      int data = res['data'];
+    
+    if (baseModel != null && data != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 1) {
         dialogService.hideLoading(context);
         customSnackBars.showSuccessSnackBar(
           title: 'Success',
           message: 'Code verification successfull',
         );
+        otpController.clear();
         Get.off(() => ChangePasswordScreen());
       } else {
         dialogService.hideLoading(context);
@@ -398,6 +443,17 @@ class AuthController extends GetxController {
       }
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from BaseModel if available
+      String errorMessage = 'Invalid code or email';
+      if (baseModel != null && baseModel.messages.isNotEmpty) {
+        errorMessage = baseModel.messages.join('\n');
+      }
+      
+      customSnackBars.showFailureSnackBar(
+        title: 'Error',
+        message: errorMessage,
+      );
     }
   }
 
@@ -407,15 +463,14 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    final response = await apiService.postWithResponse(
-      '$accountsLink/$email/reset-password',
-      {"emailAddress": email, "password": toBase64(password)},
-      false,
+    
+    final (data, baseModel) = await _userService.resetForgotPassword(
+      email: email,
+      password: toBase64(password),
     );
-    if (response != null &&
-        (response.statusCode == 200 || response.statusCode == 201)) {
-      Map<String, dynamic> res = jsonDecode(response.body);
-      bool data = res['data'];
+    
+    if (baseModel != null && data != null &&
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data) {
         dialogService.hideLoading(context);
         resetValues();
@@ -433,28 +488,32 @@ class AuthController extends GetxController {
       }
     } else {
       dialogService.hideLoading(context);
+      
+      // Extract error messages from BaseModel if available
+      String errorMessage = 'Invalid Password';
+      if (baseModel != null && baseModel.messages.isNotEmpty) {
+        errorMessage = baseModel.messages.join('\n');
+      }
+      
       customSnackBars.showFailureSnackBar(
         title: 'Error',
-        message: 'Invalid Password',
+        message: errorMessage,
       );
     }
   }
 
   Future<bool> checkUserName({required String userName}) async {
     isLoading(true);
-    final response = await apiService.get(
-      '$accountsLink/$userName/check-username',
-      false,
-      isAuth: true,
-    );
-    final responseData = response.$1;
-    final statusCode = response.$2;
-    log('Response Data : $responseData');
     
-    if (responseData != null && 
-        statusCode != null && 
-        (statusCode == 200 || statusCode == 201) &&
-        responseData['data'] == true) {
+    final (data, baseModel) = await _userService.checkUsernameAvailability(
+      username: userName,
+    );
+    
+    log('Response Data : $data');
+    
+    if (baseModel != null && data != null && 
+        (baseModel.statusCode == 200 || baseModel.statusCode == 201) &&
+        data == true) {
       isLoading(false);
       return true;
     } else {
@@ -474,6 +533,10 @@ class AuthController extends GetxController {
     dobController.clear();
     otpController.clear();
     selectedDate = null;
+  }
+
+  void clearUserGlobalState() {
+    userModelGlobal.value = null;
   }
 
   @override

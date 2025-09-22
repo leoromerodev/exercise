@@ -6,8 +6,6 @@ import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
 import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
-import 'package:heavek/utils/validators.dart';
-import 'package:heavek/views/screens/auth/complete_profile_screen.dart';
 import 'package:heavek/views/screens/auth/login_screen.dart';
 import 'package:heavek/views/widgets/common_image_view.dart';
 import 'package:heavek/views/widgets/my_button.dart';
@@ -17,6 +15,10 @@ import 'package:heavek/views/widgets/my_textfield.dart';
 class SignupScreen extends StatelessWidget {
   final bool fromMain;
   SignupScreen({required this.fromMain, super.key});
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
+  
   final _formKey = GlobalKey<FormState>();
 
   @override

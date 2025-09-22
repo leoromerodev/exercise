@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
-import 'package:heavek/views/screens/auth/set_password_screen.dart';
 import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:pinput/pinput.dart';
@@ -11,6 +11,9 @@ import 'package:pinput/pinput.dart';
 class VerificationScreen extends StatelessWidget {
   VerificationScreen({super.key});
   final _formKey = GlobalKey<FormState>();
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +72,14 @@ class VerificationScreen extends StatelessWidget {
                 controller: authController.otpController,
                 showCursor: true,
                 validator: (value) => validationService.validateOtp(value),
+                // Enable paste functionality
+                autofocus: true,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                enableInteractiveSelection: true,
+                // This allows the widget to receive pasted text
+                onClipboardFound: (value) {
+                  authController.otpController.text = value;
+                },
               ),
             ),
             SizedBox(height: 40),

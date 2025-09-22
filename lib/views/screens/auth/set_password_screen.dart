@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/widgets/common_image_view.dart';
 import 'package:heavek/views/widgets/my_button.dart';
@@ -11,6 +13,9 @@ import 'package:heavek/views/widgets/my_textfield.dart';
 class SetPasswordScreen extends StatelessWidget {
   SetPasswordScreen({super.key});
   final _formKey = GlobalKey<FormState>();
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

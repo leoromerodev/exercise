@@ -6,6 +6,7 @@ import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/models/user/user_model.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/screens/nav_bar/bottom_nav_bar.dart';
@@ -23,6 +24,9 @@ class CompleteProfileScreen extends StatefulWidget {
 }
 
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
+  
   final _formKey = GlobalKey<FormState>();
   final FocusNode _usernameFocusNode = FocusNode();
 
