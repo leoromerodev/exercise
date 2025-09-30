@@ -8,13 +8,34 @@ import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:pinput/pinput.dart';
 
-class ForgotPasswordVerificationScreen extends StatelessWidget {
+class ForgotPasswordVerificationScreen extends StatefulWidget {
   ForgotPasswordVerificationScreen({super.key});
+
+  @override
+  State<ForgotPasswordVerificationScreen> createState() => _ForgotPasswordVerificationScreenState();
+}
+
+class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerificationScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final FocusNode _pinFocusNode = FocusNode();
   
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
-  
-  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus on PIN field when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pinFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pinFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +92,17 @@ class ForgotPasswordVerificationScreen extends StatelessWidget {
                 submittedPinTheme: defaultPinTheme,
                 // Set pre-filled value
                 controller: authController.otpController,
+                focusNode: _pinFocusNode,
                 showCursor: true,
                 validator: (value) => validationService.validateOtp(value),
+                // Enable paste functionality
+                autofocus: true,
+                autofillHints: const [AutofillHints.oneTimeCode],
+                enableInteractiveSelection: true,
+                // This allows the widget to receive pasted text
+                onClipboardFound: (value) {
+                  authController.otpController.text = value;
+                },
               ),
             ),
             SizedBox(height: 40),

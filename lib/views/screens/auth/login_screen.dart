@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
@@ -13,12 +12,35 @@ import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _emailFocusNode = FocusNode();
+  bool _isPasswordVisible = false;
   
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus on email field when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emailFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +62,7 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 35),
               MyTextfield(
                 controller: authController.emailController,
+                focusNode: _emailFocusNode,
                 hint: 'test@email.com',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
@@ -56,6 +79,7 @@ class LoginScreen extends StatelessWidget {
               MyTextfield(
                 controller: authController.passwordController,
                 hint: 'Password',
+                isObSecure: !_isPasswordVisible,
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
                   child: CommonImageView(
@@ -65,10 +89,19 @@ class LoginScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                suffix: Icon(
-                  Icons.visibility_off_outlined,
-                  color: Color(0xff7A8094),
-                  size: 18,
+                suffix: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  child: Icon(
+                    _isPasswordVisible 
+                        ? Icons.visibility_outlined 
+                        : Icons.visibility_off_outlined,
+                    color: Color(0xff7A8094),
+                    size: 18,
+                  ),
                 ),
                 validator: (value) => validationService.validatePassword(value),
               ),

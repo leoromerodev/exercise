@@ -7,6 +7,7 @@ import 'package:heavek/constants/app_fonts.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
 import 'package:heavek/controllers/auth_controller.dart';
+import 'package:heavek/controllers/image_upload_controller.dart';
 import 'package:heavek/models/user/user_model.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/screens/nav_bar/bottom_nav_bar.dart';
@@ -26,6 +27,9 @@ class CompleteProfileScreen extends StatefulWidget {
 class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
+  
+  // Get ImageUploadController instance
+  ImageUploadController get imageUploadController => Get.find<ImageUploadController>();
   
   final _formKey = GlobalKey<FormState>();
   final FocusNode _usernameFocusNode = FocusNode();
@@ -75,7 +79,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                   ),
                   const SizedBox(height: 35),
 
-                  Stack(
+                  Obx(() => Stack(
                     children: [
                       Container(
                         width: 86,
@@ -87,12 +91,56 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ),
                           shape: BoxShape.circle,
                         ),
-                        child: CommonImageView(
-                          imagePath: Assets.imagesDummyPlaceholder,
-                          height: 80,
-                          width: 80,
-                        ),
+                        child: imageUploadController.currentImageFile != null
+                            ? CommonImageView(
+                                file: imageUploadController.currentImageFile,
+                                height: 86,
+                                width: 86,
+                                isUploadable: true,
+                                isCircular: true,
+                                onTap: () => imageUploadController.showTestImagePickerBottomSheet(context),
+                              )
+                            : GestureDetector(
+                                onTap: () => imageUploadController.showTestImagePickerBottomSheet(context),
+                                child: Container(
+                                  height: 86,
+                                  width: 86,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF4A739C).withOpacity(0.1),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Color(0xFF4A739C).withOpacity(0.3),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.person_add_rounded,
+                                    size: 36,
+                                    color: Color(0xFF4A739C).withOpacity(0.6),
+                                  ),
+                                ),
+                              ),
                       ),
+                      // Upload indicator overlay
+                      if (imageUploadController.isProcessing)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                       Positioned(
                         bottom: 10,
                         right: 0,
@@ -104,7 +152,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         ),
                       ),
                     ],
-                  ),
+                  )),
                   const SizedBox(height: 20),
                   MyTextfield(
                     controller: authController.firstNameController,
@@ -252,10 +300,15 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           return;
                         }
 
+                        // Use uploaded image base64 string if available, otherwise use default URL
+                        // The base64 string includes the data URL prefix: "data:image/jpeg;base64," + base64
+                        String profileImageUrl = imageUploadController.hasUploadedImage
+                            ? imageUploadController.getBase64String(includeDataUrlPrefix: true)
+                            : '';
+
                         final user = UserModel(
                           id: userModelGlobal.value?.id,
-                          profileImage:
-                              'https://firebasestorage.googleapis.com/v0/b/catalyst-fcbf0.firebasestorage.app/o/images%2Fscaled_1000006597.jpg?alt=media&token=c96613ab-f64c-467e-9f29-8a8e56d10d77',
+                          profileImage: profileImageUrl,
                           screenName: authController.userNameController.text
                               .trim(),
                           firstName: authController.firstNameController.text

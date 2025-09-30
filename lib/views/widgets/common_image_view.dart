@@ -15,6 +15,12 @@ class CommonImageView extends StatelessWidget {
   final BoxFit fit;
   final String placeHolder;
   final Color? borderColor;
+  
+  // New properties for image upload functionality
+  final VoidCallback? onTap;
+  final bool isUploadable;
+  final Widget? uploadIndicator;
+  final bool isCircular;
 
   CommonImageView({
     this.url,
@@ -28,20 +34,43 @@ class CommonImageView extends StatelessWidget {
     this.placeHolder = 'assets/images/no_image_found.png',
     this.borderWidth = 0.0,
     this.borderColor = Colors.transparent,
+    this.onTap,
+    this.isUploadable = false,
+    this.uploadIndicator,
+    this.isCircular = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return _buildImageView();
+    Widget imageWidget = _buildImageView();
+    
+    // Wrap with GestureDetector if uploadable and onTap is provided
+    if (isUploadable && onTap != null) {
+      imageWidget = GestureDetector(
+        onTap: onTap,
+        child: Stack(
+          children: [
+            imageWidget,
+            if (uploadIndicator != null)
+              Positioned.fill(
+                child: uploadIndicator!,
+              ),
+          ],
+        ),
+      );
+    }
+    
+    return imageWidget;
   }
 
   Widget _buildImageView() {
     if (svgPath != null && svgPath!.isNotEmpty) {
+      final circularRadius = isCircular ? (height! / 2) : radius!;
       return Container(
         height: height,
         width: width,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius!),
+          borderRadius: BorderRadius.circular(circularRadius),
           child: SvgPicture.asset(
             svgPath!,
             height: height,
@@ -51,26 +80,39 @@ class CommonImageView extends StatelessWidget {
         ),
       );
     } else if (file != null && file!.path.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(radius!),
-        child: Image.file(
-          file!,
-          height: height,
-          width: width,
-          fit: fit,
-        ),
-      );
-    } else if (url != null && url!.isNotEmpty) {
+      final circularRadius = isCircular ? (height! / 2) : radius!;
       return Container(
+        height: height,
+        width: width,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius!),
+          borderRadius: BorderRadius.circular(circularRadius),
           border: Border.all(
             color: borderColor!,
             width: borderWidth!,
           ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius!),
+          borderRadius: BorderRadius.circular(circularRadius),
+          child: Image.file(
+            file!,
+            height: height,
+            width: width,
+            fit: BoxFit.cover, // Ensure the image fills the entire container
+          ),
+        ),
+      );
+    } else if (url != null && url!.isNotEmpty) {
+      final circularRadius = isCircular ? (height! / 2) : radius!;
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(circularRadius),
+          border: Border.all(
+            color: borderColor!,
+            width: borderWidth!,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(circularRadius),
           child: CachedNetworkImage(
             height: height,
             width: width,
@@ -100,16 +142,17 @@ class CommonImageView extends StatelessWidget {
         ),
       );
     } else if (imagePath != null && imagePath!.isNotEmpty) {
+      final circularRadius = isCircular ? (height! / 2) : radius!;
       return Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(radius!),
+          borderRadius: BorderRadius.circular(circularRadius),
           border: Border.all(
             color: borderColor!,
             width: borderWidth!,
           ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius!),
+          borderRadius: BorderRadius.circular(circularRadius),
           child: Image.asset(
             imagePath!,
             height: height,

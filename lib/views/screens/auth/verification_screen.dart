@@ -8,12 +8,34 @@ import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:pinput/pinput.dart';
 
-class VerificationScreen extends StatelessWidget {
+class VerificationScreen extends StatefulWidget {
   VerificationScreen({super.key});
+
+  @override
+  State<VerificationScreen> createState() => _VerificationScreenState();
+}
+
+class _VerificationScreenState extends State<VerificationScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _pinFocusNode = FocusNode();
   
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus on PIN field when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pinFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _pinFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +92,7 @@ class VerificationScreen extends StatelessWidget {
                 submittedPinTheme: defaultPinTheme,
                 // Set pre-filled value
                 controller: authController.otpController,
+                focusNode: _pinFocusNode,
                 showCursor: true,
                 validator: (value) => validationService.validateOtp(value),
                 // Enable paste functionality
