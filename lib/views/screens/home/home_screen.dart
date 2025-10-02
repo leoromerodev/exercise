@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_sizes.dart';
-import 'package:heavek/utils/global_instances.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {

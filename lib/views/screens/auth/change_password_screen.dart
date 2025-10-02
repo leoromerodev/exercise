@@ -1,16 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
 import 'package:heavek/views/widgets/common_image_view.dart';
 import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
-class ChangePasswordScreen extends StatelessWidget {
+class ChangePasswordScreen extends StatefulWidget {
   ChangePasswordScreen({super.key});
+
+  @override
+  State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
+}
+
+class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _passwordFocusNode = FocusNode();
+  
+  // Get AuthController instance
+  AuthController get authController => Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus on password field when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _passwordFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +59,7 @@ class ChangePasswordScreen extends StatelessWidget {
               SizedBox(height: 35),
               MyTextfield(
                 controller: authController.passwordController,
+                focusNode: _passwordFocusNode,
                 hint: 'Password',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),

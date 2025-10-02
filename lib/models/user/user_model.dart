@@ -1,4 +1,6 @@
-class UserModel {
+import '../base_model.dart';
+
+class UserModel extends BaseModel {
   String? id;
   String? profileImage;
   String? screenName;
@@ -15,7 +17,9 @@ class UserModel {
     this.lastName,
     this.birthday,
     this.email,
-  });
+    int statusCode = 200,
+    List<String> messages = const [],
+  }) : super(statusCode: statusCode, messages: messages);
 
   // fromMap
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -29,12 +33,17 @@ class UserModel {
           ? DateTime.tryParse(map['birthday'])
           : null,
       email: map['email'] != null ? EmailModel.fromMap(map['email']) : null,
+      statusCode: map['statusCode'] ?? 200,
+      messages: List<String>.from(map['messages'] ?? []),
     );
   }
 
   // toMap
+  @override
   Map<String, dynamic> toMap() {
+    final baseMap = super.toMap();
     return {
+      ...baseMap,
       'id': id,
       'profileImage': profileImage,
       'screenName': screenName,
@@ -54,6 +63,8 @@ class UserModel {
     String? lastName,
     DateTime? birthday,
     EmailModel? email,
+    int? statusCode,
+    List<String>? messages,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -63,11 +74,13 @@ class UserModel {
       lastName: lastName ?? this.lastName,
       birthday: birthday ?? this.birthday,
       email: email ?? this.email,
+      statusCode: statusCode ?? this.statusCode,
+      messages: messages ?? this.messages,
     );
   }
 }
 
-class EmailModel {
+class EmailModel extends BaseModel {
   final bool? allowEmailNotifications;
   final bool? emailIsVerified;
   final String? emailAddress;
@@ -76,7 +89,9 @@ class EmailModel {
     this.allowEmailNotifications,
     this.emailIsVerified,
     this.emailAddress,
-  });
+    int statusCode = 200,
+    List<String> messages = const [],
+  }) : super(statusCode: statusCode, messages: messages);
 
   // fromMap
   factory EmailModel.fromMap(Map<String, dynamic> map) {
@@ -84,12 +99,17 @@ class EmailModel {
       allowEmailNotifications: map['allowEmailNotifications'],
       emailIsVerified: map['emailIsVerified'],
       emailAddress: map['emailAddress'],
+      statusCode: map['statusCode'] ?? 200,
+      messages: List<String>.from(map['messages'] ?? []),
     );
   }
 
   // toMap
+  @override
   Map<String, dynamic> toMap() {
+    final baseMap = super.toMap();
     return {
+      ...baseMap,
       'allowEmailNotifications': allowEmailNotifications,
       'emailIsVerified': emailIsVerified,
       'emailAddress': emailAddress,
@@ -101,12 +121,16 @@ class EmailModel {
     bool? allowEmailNotifications,
     bool? emailIsVerified,
     String? emailAddress,
+    int? statusCode,
+    List<String>? messages,
   }) {
     return EmailModel(
       allowEmailNotifications:
           allowEmailNotifications ?? this.allowEmailNotifications,
       emailIsVerified: emailIsVerified ?? this.emailIsVerified,
       emailAddress: emailAddress ?? this.emailAddress,
+      statusCode: statusCode ?? this.statusCode,
+      messages: messages ?? this.messages,
     );
   }
 }

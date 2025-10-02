@@ -20,7 +20,7 @@ class LocalStorageService {
 
   Future<String?> readString({required String key}) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    return await _prefs.getString(key);
+    return _prefs.getString(key);
   }
 
   Future<void> deleteKey({required String key}) async {

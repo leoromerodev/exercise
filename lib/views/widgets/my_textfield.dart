@@ -1,11 +1,9 @@
-// ignore: must_be_immutable
 import 'package:flutter/material.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
-import 'package:heavek/views/widgets/my_text.dart';
 
 class MyTextfield extends StatelessWidget {
-  MyTextfield({
+  const MyTextfield({
     Key? key,
     this.controller,
     this.hint,
@@ -33,14 +31,14 @@ class MyTextfield extends StatelessWidget {
   }) : super(key: key);
   final String? hint, heading;
 
-  TextEditingController? controller;
-  ValueChanged<String>? onChanged;
-  Function(String)? onSubmit;
-  bool? isObSecure;
-  double? marginBottom;
-  int? maxLines;
-  TextInputType? keyboardType;
-  TextInputAction textInputAction;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final Function(String)? onSubmit;
+  final bool? isObSecure;
+  final double? marginBottom;
+  final int? maxLines;
+  final TextInputType? keyboardType;
+  final TextInputAction textInputAction;
   final bool? readOnly;
   final VoidCallback? onTap;
   final bool? isEnable, isCompulsory;
@@ -51,7 +49,7 @@ class MyTextfield extends StatelessWidget {
   final FontWeight? hintWeight;
   final double? radius;
   final FormFieldValidator<String>? validator;
-  FocusNode? focusNode;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {

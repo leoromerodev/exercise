@@ -1,30 +1,35 @@
-// This is a basic Flutter widget test.
+// Basic unit tests for Heavek Mobile
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// These tests verify basic functionality without UI components
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:heavek/main.dart';
+import 'package:heavek/utils/functions.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Utility Functions Tests', () {
+    test('toBase64 function works correctly with valid input', () {
+      const testString = 'test123';
+      final result = toBase64(testString);
+      
+      expect(result, isNotEmpty);
+      expect(result, isA<String>());
+      // Expected base64 encoding of 'test123'
+      expect(result, equals('dGVzdDEyMw=='));
+    });
+    
+    test('toBase64 handles empty string', () {
+      const testString = '';
+      final result = toBase64(testString);
+      
+      expect(result, isEmpty);
+    });
+    
+    test('toBase64 handles special characters', () {
+      const testString = 'Hello World!@#';
+      final result = toBase64(testString);
+      
+      expect(result, isNotEmpty);
+      expect(result, equals('SGVsbG8gV29ybGQhQCM='));
+    });
   });
 }
