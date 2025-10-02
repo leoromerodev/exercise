@@ -1,4 +1,4 @@
-const baseUrl = 'http://3.16.31.213';
+const baseUrl = 'http://18.218.246.85';
 
 const authTokenUrl = '$baseUrl/authentication/token';
 const accountsLink = '$baseUrl/v1/accounts';
