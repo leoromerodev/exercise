@@ -125,8 +125,8 @@ class AuthController extends GetxController {
             (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
           userModelGlobal.value = userProfile;
           
-          if (userModelGlobal.value?.firstName == null ||
-              userModelGlobal.value?.screenName == null) {
+          if ((userModelGlobal.value?.firstName?.isEmpty ?? true) ||
+              (userModelGlobal.value?.screenName?.isEmpty ?? true)) {
             dialogService.hideLoading(context);
             Get.offAll(() => CompleteProfileScreen());
           } else {
@@ -230,8 +230,8 @@ class AuthController extends GetxController {
           (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
         userModelGlobal.value = userProfile;
         
-        if (userModelGlobal.value?.firstName == null ||
-            userModelGlobal.value?.screenName == null) {
+        if ((userModelGlobal.value?.firstName?.isEmpty ?? true) ||
+            (userModelGlobal.value?.screenName?.isEmpty ?? true)) {
           passwordController.clear();
           dialogService.hideLoading(context);
           Get.offAll(() => CompleteProfileScreen());

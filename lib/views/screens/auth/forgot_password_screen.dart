@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
@@ -11,12 +10,34 @@ import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final FocusNode _emailFocusNode = FocusNode();
   
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-focus on email field when screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _emailFocusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +72,7 @@ class ForgotPasswordScreen extends StatelessWidget {
               key: _formKey,
               child: MyTextfield(
                 controller: authController.emailController,
+                focusNode: _emailFocusNode,
                 hint: 'test@email.com',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
