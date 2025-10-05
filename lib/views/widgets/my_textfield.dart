@@ -77,7 +77,7 @@ class MyTextfield extends StatelessWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: kTextColor,
+        color: kTextColorPrimary,
         fontFamily: AppFonts.Montserrat,
       ),
       decoration: InputDecoration(
