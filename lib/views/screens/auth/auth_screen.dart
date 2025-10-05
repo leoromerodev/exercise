@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/utils.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';

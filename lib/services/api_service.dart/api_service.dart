@@ -14,7 +14,7 @@ Map<String, String> basicHeaderInfo() => {
 };
 
 Future<Map<String, String>> bearerHeaderInfo() async {
-  String? token = await localStorageService.readString(key: userTokenKey);
+  String? token = await localStorageService.readSecureString(key: userTokenKey);
   return token != null
       ? {
           HttpHeaders.acceptHeader: "application/json",
@@ -26,8 +26,8 @@ Future<Map<String, String>> bearerHeaderInfo() async {
 }
 
 Future<Map<String, String>> bearerAuthHeaderInfo() async {
-  String? token = await localStorageService.readString(key: userTokenKey);
-  String? authToken = await localStorageService.readString(
+  String? token = await localStorageService.readSecureString(key: userTokenKey);
+  String? authToken = await localStorageService.readSecureString(
     key: userAuthTokenKey,
   );
   return token != null && authToken != null
@@ -271,7 +271,7 @@ class APIService {
       return null;
     }
     try {
-      log("BODY IS ${body}");
+      log("BODY IS $body");
       final response = await http
           .post(
             Uri.parse(url),
@@ -357,7 +357,7 @@ class APIService {
       return null;
     }
     try {
-      log("BODY IS ${body}");
+      log("BODY IS $body");
       final response = await http
           .post(
             Uri.parse(url),
@@ -743,7 +743,7 @@ class APIService {
             headers: isBasic ? basicHeaderInfo() : await bearerHeaderInfo(),
           )
           .timeout(Duration(seconds: duration));
-      log("patch RESPONSE ($url): ${response}");
+      log("patch RESPONSE ($url): $response");
 
       if (showResult) {
         log("patch API RESPONSE ($url): ${response.body}");

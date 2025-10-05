@@ -40,7 +40,7 @@ class AuthController extends GetxController {
     );
     
     if (response != null) {
-      await localStorageService.writeString(key: userTokenKey, value: response);
+      await localStorageService.writeSecureString(key: userTokenKey, value: response);
     }
     log(response.toString());
   }
@@ -111,7 +111,7 @@ class AuthController extends GetxController {
           (loginStatusCode == 200 || loginStatusCode == 201)) {
         
         // Store auth token
-        await localStorageService.writeString(
+        await localStorageService.writeSecureString(
           key: userAuthTokenKey,
           value: authToken,
         );
@@ -216,7 +216,7 @@ class AuthController extends GetxController {
         (loginStatusCode == 200 || loginStatusCode == 201)) {
       
       // Store auth token
-      await localStorageService.writeString(
+      await localStorageService.writeSecureString(
         key: userAuthTokenKey,
         value: authToken,
       );
@@ -324,7 +324,7 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     // Clear stored auth token
-    await localStorageService.deleteKey(key: userAuthTokenKey);
+    await localStorageService.deleteSecureKey(key: userAuthTokenKey);
     
     // Clear global user model to prevent old data persistence
     userModelGlobal.value = null;

@@ -106,54 +106,58 @@ jobs:
         path: build/app/outputs/flutter-apk/app-debug.apk
         retention-days: 3
 
-  # iOS build job (commented out for future use)
-  # ios-build:
-  #   runs-on: macos-latest
-  #   
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v4
-  #     
-  #   - name: Setup Flutter
-  #     uses: subosito/flutter-action@v2
-  #     with:
-  #       flutter-version: '3.35.4'
-  #       channel: 'stable'
-  #       cache: true
-  #       
-  #   - name: Cache Flutter packages
-  #     uses: actions/cache@v4
-  #     with:
-  #       path: ~/.pub-cache
-  #       key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-  #       restore-keys: |
-  #         ${{ runner.os }}-pub-
-  #       
-  #   - name: Create .env file
-  #     run: |
-  #       echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
-  #       echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-  #       
-  #   - name: Get dependencies
-  #     run: flutter pub get
-  #     
-  #   - name: Analyze code
-  #     run: flutter analyze --no-fatal-infos
-  #     
-  #   - name: Run tests
-  #     run: flutter test
-  #     
-  #   - name: Build iOS (no signing) with retry
-  #     uses: nick-fields/retry@v3
-  #     with:
-  #       timeout_minutes: 20
-  #       max_attempts: 2
-  #       retry_wait_seconds: 30
-  #       command: flutter build ios --no-codesign --debug --verbose
-  #     
-  #   - name: Upload iOS artifact
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: debug-ios
-  #       path: build/ios/iphoneos/Runner.app
-  #       retention-days: 7
+  ios-build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.4'
+        channel: 'stable'
+        cache: true
+        
+    - name: Cache Flutter packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.pub-cache
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pub-
+        
+    - name: Create .env file
+      run: |
+        echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
+        echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Analyze code
+      run: flutter analyze --no-fatal-infos
+      
+    - name: Run tests
+      run: flutter test
+      
+    - name: Setup iOS Simulator
+      run: |
+        xcrun simctl list devices
+        xcrun simctl boot "iPhone 15" || true
+        
+    - name: Build iOS (no signing) with retry
+      uses: nick-fields/retry@v3
+      with:
+        timeout_minutes: 20
+        max_attempts: 2
+        retry_wait_seconds: 30
+        command: flutter build ios --no-codesign --debug --verbose
+      
+    - name: Upload iOS artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-ios
+        path: build/ios/iphoneos/Runner.app
+        retention-days: 3

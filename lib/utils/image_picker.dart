@@ -49,7 +49,6 @@ class ImagePickerService {
 
   Future<XFile?> pickSingleImageFromGallery() async {
     try {
-      print("pickSingleImageFromGallery Called Try");
       XFile? imgXFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         imageQuality: 50,

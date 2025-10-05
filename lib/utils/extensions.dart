@@ -12,31 +12,31 @@ extension EmailValidator on String {
 
 extension UsernameValidator on String {
   bool isValidUsername() {
-    return this.length >= 3 && !RegExp(r'^\d+$').hasMatch(this);
+    return length >= 3 && !RegExp(r'^\d+$').hasMatch(this);
   }
 }
 
 extension UpperCaseValidator on String {
   bool isUpperCase() {
-    return this.contains(RegExp(r'[A-Z]'));
+    return contains(RegExp(r'[A-Z]'));
   }
 }
 
 extension LowerCaseValidator on String {
   bool isLowerCase() {
-    return this.contains(RegExp(r'[a-z]'));
+    return contains(RegExp(r'[a-z]'));
   }
 }
 
 extension DigitValidator on String {
   bool isContainDigit() {
-    return this.contains(RegExp(r'[0-9]'));
+    return contains(RegExp(r'[0-9]'));
   }
 }
 
 extension SpecialCharacterValidator on String {
   bool isContainSpecialCharacter() {
-    return this.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+    return contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
   }
 }
 

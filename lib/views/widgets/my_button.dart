@@ -41,8 +41,8 @@ class MyButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          splashColor: splashColor ?? kPrimaryColor.withOpacity(0.2),
-          highlightColor: splashColor ?? kPrimaryColor.withOpacity(0.2),
+          splashColor: splashColor ?? kPrimaryColor.withValues(alpha: 0.2),
+          highlightColor: splashColor ?? kPrimaryColor.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(radius!),
           child:
               child ??

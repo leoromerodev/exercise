@@ -13,12 +13,9 @@ class DialogService {
     showDialog(
       context: context,
       barrierDismissible: false,
-      // ignore: deprecated_member_use
       builder:
-          (_) => WillPopScope(
-            onWillPop: () async {
-              return false;
-            },
+          (_) => PopScope(
+            canPop: false,
             child: Center(
               child: CircularProgressIndicator(color: kSecondaryColor),
             ),
