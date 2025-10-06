@@ -106,17 +106,17 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                                   height: 86,
                                   width: 86,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF4A739C).withOpacity(0.1),
+                                    color: Color(0xFF4A739C).withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Color(0xFF4A739C).withOpacity(0.3),
+                                      color: Color(0xFF4A739C).withValues(alpha: 0.3),
                                       width: 1,
                                     ),
                                   ),
                                   child: Icon(
                                     Icons.person_add_rounded,
                                     size: 36,
-                                    color: Color(0xFF4A739C).withOpacity(0.6),
+                                    color: Color(0xFF4A739C).withValues(alpha: 0.6),
                                   ),
                                 ),
                               ),
@@ -126,7 +126,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         Positioned.fill(
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -213,7 +213,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         borderSide: BorderSide(
                           color: _isUsernameValid
                               ? Colors.green
-                              : Color(0xff4A739C).withOpacity(0.14),
+                              : Color(0xff4A739C).withValues(alpha: 0.14),
                           width: 1,
                         ),
                       ),
@@ -222,7 +222,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         borderSide: BorderSide(
                           color: _isUsernameValid
                               ? Colors.green
-                              : Color(0xff4A739C).withOpacity(0.14),
+                              : Color(0xff4A739C).withValues(alpha: 0.14),
                           width: 1,
                         ),
                       ),

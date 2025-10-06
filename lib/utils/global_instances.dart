@@ -21,3 +21,11 @@ String? globalUSecret;
 
 final userTokenKey = "heavek_user_token";
 final userAuthTokenKey = "heavek_user_auth_token";
+
+// Global user login status based on token availability
+Future<bool> get isUserLogged async {
+  String? token = await localStorageService.readSecureString(key: userTokenKey);
+  String? authToken = await localStorageService.readSecureString(key: userAuthTokenKey);
+  
+  return (token?.isNotEmpty ?? false) && (authToken?.isNotEmpty ?? false);
+}

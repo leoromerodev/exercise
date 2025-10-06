@@ -48,7 +48,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
         fontWeight: FontWeight.w600,
       ),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xff05212F).withOpacity(0.14)),
+        border: Border.all(color: Color(0xff05212F).withValues(alpha: 0.14)),
         borderRadius: BorderRadius.circular(12),
       ),
     );

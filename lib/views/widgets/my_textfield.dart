@@ -77,7 +77,7 @@ class MyTextfield extends StatelessWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w400,
-        color: kTextColor,
+        color: kTextColorPrimary,
         fontFamily: AppFonts.Montserrat,
       ),
       decoration: InputDecoration(
@@ -100,28 +100,28 @@ class MyTextfield extends StatelessWidget {
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             width: 1,
-            color: Color(0xff4A739C).withOpacity(0.14),
+            color: Color(0xff4A739C).withValues(alpha: 0.14),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             width: 1,
-            color: Color(0xff4A739C).withOpacity(0.14),
+            color: Color(0xff4A739C).withValues(alpha: 0.14),
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             width: 1,
-            color: Color(0xff4A739C).withOpacity(0.14),
+            color: Color(0xff4A739C).withValues(alpha: 0.14),
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: BorderSide(
             width: 1,
-            color: Color(0xff4A739C).withOpacity(0.14),
+            color: Color(0xff4A739C).withValues(alpha: 0.14),
           ),
         ),
       ),

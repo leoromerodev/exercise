@@ -56,11 +56,11 @@ class ImagePickerBottomSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(CupertinoIcons.camera, color: kTextColor),
+                        Icon(CupertinoIcons.camera, color: kTextColorPrimary),
                         MyText(
                           paddingTop: 10,
                           text: 'camera'.tr,
-                          color: kTextColor,
+                          color: kTextColorPrimary,
                         ),
                       ],
                     ),
@@ -73,12 +73,12 @@ class ImagePickerBottomSheet extends StatelessWidget {
                       children: [
                         Icon(
                           CupertinoIcons.photo_fill_on_rectangle_fill,
-                          color: kTextColor,
+                          color: kTextColorPrimary,
                         ),
                         MyText(
                           paddingTop: 10,
                           text: 'gallery'.tr,
-                          color: kTextColor,
+                          color: kTextColorPrimary,
                         ),
                       ],
                     ),

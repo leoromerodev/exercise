@@ -135,7 +135,7 @@ class NavBar extends StatelessWidget {
                         text: title,
                         weight: FontWeight.w500,
                         size: 10,
-                        color: kWhiteColor.withOpacity(0.8),
+                        color: kWhiteColor.withValues(alpha: 0.8),
                         paddingTop: 4,
                       ),
                     ],

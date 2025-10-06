@@ -33,7 +33,7 @@ class MyText extends StatelessWidget {
     this.lineHeight,
     this.maxLines = 100,
     this.decoration = TextDecoration.none,
-    this.color = kTextColor,
+    this.color = kTextColorPrimary,
     this.letterSpacing,
     this.weight = FontWeight.w400,
     this.textAlign,

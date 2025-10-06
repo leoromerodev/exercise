@@ -17,9 +17,9 @@ class UserModel extends BaseModel {
     this.lastName,
     this.birthday,
     this.email,
-    int statusCode = 200,
-    List<String> messages = const [],
-  }) : super(statusCode: statusCode, messages: messages);
+    super.statusCode = 200,
+    super.messages = const [],
+  });
 
   // fromMap
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -89,9 +89,9 @@ class EmailModel extends BaseModel {
     this.allowEmailNotifications,
     this.emailIsVerified,
     this.emailAddress,
-    int statusCode = 200,
-    List<String> messages = const [],
-  }) : super(statusCode: statusCode, messages: messages);
+    super.statusCode = 200,
+    super.messages = const [],
+  });
 
   // fromMap
   factory EmailModel.fromMap(Map<String, dynamic> map) {
