@@ -34,15 +34,22 @@ class AuthController extends GetxController {
   final UserService _userService = UserService.instance;
 
   Future<void> getAuthToken() async {
-    final response = await _userService.getAuthToken(
+    final success = await _userService.getAuthToken(
       username: globalUsername!,
       secret: globalUSecret!,
     );
     
-    if (response != null) {
-      await localStorageService.writeSecureString(key: userTokenKey, value: response);
+    log('Auth token retrieval: ${success ? "Success" : "Failed"}');
+  }
+
+  Future<UserModel?> getUserProfile({String email = ''}) async {
+    try {
+      final userEmail = email.isNotEmpty ? email : await localStorageService.readSecureString(key: userEmailKey);
+      return await _userService.getUserProfile(email: userEmail!);
+    } catch (e) {
+      log('Error getting user profile: $e');
+      return null;
     }
-    log(response.toString());
   }
 
   Future<void> checkAccountStatus({
@@ -110,14 +117,8 @@ class AuthController extends GetxController {
       if (authToken != null && loginStatusCode != null &&
           (loginStatusCode == 200 || loginStatusCode == 201)) {
         
-        // Store auth token
-        await localStorageService.writeSecureString(
-          key: userAuthTokenKey,
-          value: authToken,
-        );
-
         // Step 3: Get user profile
-        final userProfile = await _userService.getUserProfileWithAuth(
+        final userProfile = await getUserProfile(
           email: email,
         );
         
@@ -222,7 +223,7 @@ class AuthController extends GetxController {
       );
 
       // Step 2: Get user profile
-      final userProfile = await _userService.getUserProfileWithAuth(
+      final userProfile = await getUserProfile(
         email: email,
       );
       
@@ -325,6 +326,9 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     // Clear stored auth token
     await localStorageService.deleteSecureKey(key: userAuthTokenKey);
+    await localStorageService.deleteSecureKey(key: userTokenKey);
+    await localStorageService.deleteSecureKey(key: userEmailKey);
+    await localStorageService.deleteSecureKey(key: userPasswordKey);
     
     // Clear global user model to prevent old data persistence
     userModelGlobal.value = null;

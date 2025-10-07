@@ -3,9 +3,11 @@ import 'dart:developer';
 import 'package:heavek/constants/endpoints.dart';
 import 'package:heavek/models/base_model.dart';
 import 'package:heavek/models/user/user_model.dart';
-import 'package:heavek/services/api_service.dart/api_service.dart';
+import 'package:heavek/services/api_service/api_service.dart';
+import 'package:heavek/services/api_service/auth_refresh_service.dart';
+import 'package:heavek/utils/global_instances.dart';
 
-class UserService {
+class UserService implements AuthRefreshService {
   // Private constructor
   UserService._privateConstructor();
 
@@ -19,7 +21,7 @@ class UserService {
   }
 
   // Get reference to the base API service
-  final APIService _apiService = APIService.instance;
+  APIService get _apiService => apiService;
 
   // User authentication endpoints
   static const String _loginEndpoint = '$accountsLink/login';
@@ -149,26 +151,6 @@ class UserService {
     }
   }
 
-  /// Get user profile (requires authentication)
-  Future<UserModel?> getUserProfile() async {
-    try {
-      final (response, statusCode) = await _apiService.get(
-        _getUserProfileEndpoint,
-        false, // not basic, requires auth token
-        successCode: 200,
-        showResult: true,
-      );
-
-      if (response != null && statusCode == 200) {
-        return UserModel.fromMap(response);
-      }
-      return null;
-    } catch (e) {
-      log('Error in getUserProfile: $e');
-      return null;
-    }
-  }
-
   /// Update user profile (requires authentication)
   Future<UserModel?> updateUserProfile({
     String? firstName,
@@ -204,7 +186,7 @@ class UserService {
   }
 
   /// Get authentication token using username and secret
-  Future<String?> getAuthToken({
+  Future<bool> getAuthToken({
     required String username,
     required String secret,
   }) async {
@@ -221,10 +203,19 @@ class UserService {
         showResult: true,
       );
 
-      return response;
+      if (response != null) {
+        // Centralized token writing logic
+        await localStorageService.writeSecureString(
+          key: userTokenKey,
+          value: response,
+        );
+        log('Auth token written to secure storage');
+        return true;
+      }
+      return false;
     } catch (e) {
       log('Error in getAuthToken: $e');
-      return null;
+      return false;
     }
   }
 
@@ -293,6 +284,22 @@ class UserService {
           (response.statusCode == 200 || response.statusCode == 201)) {
         Map<String, dynamic> authData = jsonDecode(response.body);
         String authToken = authData['data'];
+        
+        // Centralized token writing logic
+        await localStorageService.writeSecureString(
+          key: userAuthTokenKey,
+          value: authToken,
+        );
+        await localStorageService.writeSecureString(
+          key: userEmailKey,
+          value: email,
+        );
+        await localStorageService.writeSecureString(
+          key: userPasswordKey,
+          value: password,
+        );
+        log('Auth token written to secure storage');
+        
         return (authToken, response.statusCode);
       }
       return (null, response?.statusCode);
@@ -303,7 +310,7 @@ class UserService {
   }
 
   /// Get user profile with authentication
-  Future<UserModel?> getUserProfileWithAuth({
+  Future<UserModel?> getUserProfile({
     required String email,
   }) async {
     try {
@@ -615,6 +622,45 @@ class UserService {
     } catch (e) {
       log('Error in deleteUserAccount: $e');
       return null;
+    }
+  }
+
+  /// Refresh authentication token (implements AuthRefreshService)
+  @override
+  Future<void> refreshAuthToken() async {
+    try {
+      // Implement your token refresh logic here
+      // This method will be called by APIService on 401/403 errors
+      log('Refreshing authentication token...');
+      
+      await getAuthToken(
+        username: globalUsername!,
+        secret: globalUSecret!,
+      );
+      
+    } catch (e) {
+      log('Error refreshing auth token: $e');
+    }
+  }
+
+  /// Refresh auth user token (for 403 errors)
+  @override
+  Future<void> refreshAuthUserToken() async {
+    try {
+      log('Refreshing auth user token...');
+      
+      // Get the current user's email from global user model
+      final userEmail = await localStorageService.readSecureString(key: userEmailKey);
+      final userPassword = await localStorageService.readSecureString(key: userPasswordKey);
+      
+      // Get auth token using login credentials
+      await loginAndGetAuthToken(
+        email: userEmail!,
+        password: userPassword!,
+      );
+      
+    } catch (e) {
+      log('Error refreshing auth user token: $e');
     }
   }
 }
