@@ -5,6 +5,8 @@ import 'package:heavek/constants/app_fonts.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
+import 'package:heavek/views/widgets/training_categories_selector.dart';
+import 'package:heavek/views/widgets/movement_pattern_selector.dart';
 import 'exercise_details_screen.dart';
 import 'exercise_wizard_screen_3.dart';
 
@@ -23,6 +25,33 @@ class ExerciseWizardScreen2 extends StatefulWidget {
 }
 
 class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
+  // Selection storage for the training categories
+  Map<String, Set<String>> selectedTrainings = {};
+  Map<String, Set<String>> selectedTechniques = {};
+
+  // Selection storage for movement patterns
+  Set<String> selectedMovementPatterns = {};
+
+  // Toggle states for exercise properties
+  bool isWarmUpFriendly = false;
+  bool isCoolDownFriendly = false;
+
+  void _onSelectionChanged(
+    Map<String, Set<String>> trainings,
+    Map<String, Set<String>> techniques,
+  ) {
+    setState(() {
+      selectedTrainings = trainings;
+      selectedTechniques = techniques;
+    });
+  }
+
+  void _onMovementPatternChanged(Set<String> patterns) {
+    setState(() {
+      selectedMovementPatterns = patterns;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,46 +122,25 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
             ),
             const SizedBox(height: 10.0),
 
-            // Main Content Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MyText(
-                    text: 'Training Categories',
-                    size: 18,
-                    weight: AppFontWeight.semiBold,
-                    color: kTextColorPrimary,
-                    fontFamily: AppFonts.Montserrat,
-                  ),
-                  const SizedBox(height: 8),
-                  MyText(
-                    text:
-                        'Tag the training categories this exercise belongs to.',
-                    size: 13,
-                    weight: AppFontWeight.regular,
-                    color: kTextColorSecondary,
-                    fontFamily: AppFonts.OpenSans,
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // Category Selection (Placeholder)
-                ],
-              ),
+            // Training Categories Selector Widget
+            TrainingCategoriesSelector(
+              selectedTrainings: selectedTrainings,
+              selectedTechniques: selectedTechniques,
+              onSelectionChanged: _onSelectionChanged,
+              showSubheading: true,
             ),
+            const SizedBox(height: 20.0),
+
+            // Movement Pattern Selector Widget
+            MovementPatternSelector(
+              selectedPatterns: selectedMovementPatterns,
+              onSelectionChanged: _onMovementPatternChanged,
+              showSubheading: true,
+            ),
+            const SizedBox(height: 20.0),
+
+            // Exercise Properties Toggles
+            _buildExercisePropertiesSection(),
             const SizedBox(height: 30.0),
 
             // Action Buttons
@@ -147,7 +155,7 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       child: MyText(
@@ -182,8 +190,159 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
     );
   }
 
+  // Build exercise properties toggles section
+  Widget _buildExercisePropertiesSection() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Warm-up friendly toggle
+          _buildToggleOption(
+            title: 'Warm-up friendly',
+            subtitle: 'This exercise can be used as general warm-up',
+            value: isWarmUpFriendly,
+            onChanged: (value) {
+              setState(() {
+                isWarmUpFriendly = value;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+
+          // Cool-down friendly toggle
+          _buildToggleOption(
+            title: 'Cool-down friendly',
+            subtitle: 'This exercise can be used as a cool-down',
+            value: isCoolDownFriendly,
+            onChanged: (value) {
+              setState(() {
+                isCoolDownFriendly = value;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build individual toggle option
+  Widget _buildToggleOption({
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MyText(
+                text: title,
+                size: 16,
+                weight: AppFontWeight.medium,
+                color: kTextColorPrimary,
+                fontFamily: AppFonts.Montserrat,
+              ),
+              const SizedBox(height: 4),
+              MyText(
+                text: subtitle,
+                size: 13,
+                weight: AppFontWeight.regular,
+                color: kTextColorSecondary,
+                fontFamily: AppFonts.OpenSans,
+              ),
+            ],
+          ),
+        ),
+        _CustomShadowSwitch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: kSecondaryColor,
+          inactiveColor: kPrimaryColor,
+          activeTrackColor: kSecondaryColor.withValues(alpha: 0.3),
+          inactiveTrackColor: kSwitchInactiveColor,
+        ),
+      ],
+    );
+  }
+
   void _onContinue() {
     // Navigate to next screen
     Get.to(() => ExerciseWizardScreen3(exerciseName: widget.exerciseName));
+  }
+}
+
+// Custom switch widget with shadow on thumb only
+class _CustomShadowSwitch extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool>? onChanged;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Color activeTrackColor;
+  final Color inactiveTrackColor;
+
+  const _CustomShadowSwitch({
+    required this.value,
+    this.onChanged,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.activeTrackColor,
+    required this.inactiveTrackColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onChanged != null ? () => onChanged!(!value) : null,
+      child: Container(
+        width: 51,
+        height: 31,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.5),
+          color: value ? activeTrackColor : inactiveTrackColor,
+        ),
+        child: Stack(
+          children: [
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeInOut,
+              left: value ? 20 : 0,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                width: 31,
+                height: 31,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: value ? activeColor : inactiveColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

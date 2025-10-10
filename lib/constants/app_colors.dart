@@ -16,3 +16,7 @@ const kTextInputBackgroundColor = Color(0xffF7FAFC);
 const kTextInputHintColor = Color(0xff4A739C);
 const kMediaUploadBackgroundColor = Color(0xffF2FAFF);
 const kTertiaryColor = Color(0xff067BC2);
+const kUnselectedChipColor = Color(0xffD9D9D9);
+const kSwitchInactiveColor = Color(0xffF0F2F5);
+const kVisualMuscleSelector = Color(0xffababab);
+const kVisualMuscleSelectorContainer = Color(0xffe2e2e2);
