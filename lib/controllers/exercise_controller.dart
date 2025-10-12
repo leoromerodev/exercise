@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:heavek/models/exercise/exercise_model.dart';
 import 'package:heavek/services/workout/exercise_service.dart';
+import 'package:heavek/services/workout/resource_service.dart';
 
 class ExerciseController extends GetxController {
   final RxList<ExerciseModel> allExercises = <ExerciseModel>[].obs;
@@ -37,6 +38,7 @@ class ExerciseController extends GetxController {
 
   // Get reference to ExerciseService using the Singleton pattern
   final ExerciseService _exerciseService = ExerciseService.instance;
+  final ResourceService _resourceService = ResourceService.instance;
 
   @override
   void onInit() {
@@ -58,6 +60,9 @@ class ExerciseController extends GetxController {
       allExercises.value = exercises;
       filteredExercises.value = exercises; // Inicialmente, todos los ejercicios
       log('Loaded ${exercises.length} exercises');
+
+      final muscles = await _resourceService.getAllMuscles();
+      log('Loaded ${muscles.length} muscles');
     } catch (e) {
       log('Error loading exercises: $e');
     } finally {
@@ -253,7 +258,3 @@ class ExerciseController extends GetxController {
     super.onClose();
   }
 }
-
-
-
-
