@@ -11,7 +11,7 @@ import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
-  ChangePasswordScreen({super.key});
+  const ChangePasswordScreen({super.key});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -20,7 +20,7 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _passwordFocusNode = FocusNode();
-  
+
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
 
@@ -45,16 +45,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: AppSizes.DEFAULT,
+          padding: AppSizes.defaultPadding,
           child: Column(
             children: [
               const SizedBox(height: 60),
               Center(
-                child: MyText(
-                  text: 'Enter New Password',
-                  weight: FontWeight.w700,
-                  size: 20,
-                ),
+                child: MyText(text: 'Enter New Password', weight: FontWeight.w700, size: 20),
               ),
               SizedBox(height: 35),
               MyTextfield(
@@ -70,17 +66,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                suffix: Icon(
-                  Icons.visibility_off_outlined,
-                  color: Color(0xff7A8094),
-                  size: 18,
-                ),
+                suffix: Icon(Icons.visibility_off_outlined, color: Color(0xff7A8094), size: 18),
                 validator: (value) => validationService.validatePassword(value),
               ),
               const SizedBox(height: 10),
               MyText(
-                text:
-                    '*Password must have at least 8 characters, 1 capital letter, 1 number, and 1 symbol.',
+                text: '*Password must have at least 8 characters, 1 capital letter, 1 number, and 1 symbol.',
                 weight: FontWeight.w500,
                 size: 11,
                 color: kLightTextColor,
@@ -98,15 +89,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     fit: BoxFit.cover,
                   ),
                 ),
-                suffix: Icon(
-                  Icons.visibility_off_outlined,
-                  color: Color(0xff7A8094),
-                  size: 18,
-                ),
-                validator: (value) => validationService.validateMatchPassword(
-                  authController.passwordController.text.trim(),
-                  value!,
-                ),
+                suffix: Icon(Icons.visibility_off_outlined, color: Color(0xff7A8094), size: 18),
+                validator: (value) =>
+                    validationService.validateMatchPassword(authController.passwordController.text.trim(), value!),
               ),
               SizedBox(height: 35),
               MyButton(

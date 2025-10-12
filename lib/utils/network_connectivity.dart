@@ -12,14 +12,18 @@ class NetworkConnectivity {
   //method to check if the device is connected to network
   Future<NetworkStatus> getNetworkStatus() async {
     //initializing ConnectivityResult
-    List<ConnectivityResult> _result = await Connectivity().checkConnectivity();
+    List<ConnectivityResult> result = await Connectivity().checkConnectivity();
 
     //checking if the device is connected to cellular or wifi network
-    NetworkStatus _networkStatus = _result.first == ConnectivityResult.mobile ||
-            _result.first == ConnectivityResult.wifi
+    NetworkStatus networkStatus = result.first == ConnectivityResult.mobile ||
+            result.first == ConnectivityResult.wifi
         ? NetworkStatus.online
         : NetworkStatus.offline;
 
-    return _networkStatus;
+    return networkStatus;
   }
 }
+
+
+
+

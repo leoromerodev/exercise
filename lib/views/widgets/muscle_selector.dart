@@ -176,7 +176,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
             size: 18,
             weight: AppFontWeight.semiBold,
             color: kTextColorPrimary,
-            fontFamily: AppFonts.Montserrat,
+            fontFamily: AppFonts.montserrat,
           ),
 
           // Optional subheading
@@ -189,7 +189,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
               size: 12,
               weight: AppFontWeight.regular,
               color: kTextColorSecondary,
-              fontFamily: AppFonts.OpenSans,
+              fontFamily: AppFonts.openSans,
             ),
           ],
 
@@ -274,7 +274,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
                     ? AppFontWeight.semiBold
                     : AppFontWeight.medium,
                 color: isSelected ? kTextColorPrimary : kTextColorSecondary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
             // Active indicator
@@ -454,7 +454,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
           size: 18,
           weight: AppFontWeight.semiBold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         const SizedBox(height: 12),
         Row(
@@ -557,7 +557,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
             size: 12,
             weight: AppFontWeight.medium,
             color: Colors.white,
-            fontFamily: AppFonts.Montserrat,
+            fontFamily: AppFonts.montserrat,
           ),
           const SizedBox(width: 8),
           GestureDetector(

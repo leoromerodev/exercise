@@ -32,15 +32,9 @@ class UserService implements AuthRefreshService {
   static const String _updateUserProfileEndpoint = '$accountsLink/profile';
 
   /// Login user with email and password
-  Future<UserModel?> loginUser({
-    required String email,
-    required String password,
-  }) async {
+  Future<UserModel?> loginUser({required String email, required String password}) async {
     try {
-      final body = {
-        'email': email,
-        'password': password,
-      };
+      final body = {'email': email, 'password': password};
 
       final response = await _apiService.post(
         _loginEndpoint,
@@ -96,15 +90,9 @@ class UserService implements AuthRefreshService {
   }
 
   /// Verify OTP
-  Future<BaseModel?> verifyOtp({
-    required String email,
-    required String otp,
-  }) async {
+  Future<BaseModel?> verifyOtp({required String email, required String otp}) async {
     try {
-      final body = {
-        'email': email,
-        'otp': otp,
-      };
+      final body = {'email': email, 'otp': otp};
 
       final response = await _apiService.post(
         _verifyOtpEndpoint,
@@ -125,13 +113,9 @@ class UserService implements AuthRefreshService {
   }
 
   /// Forgot password
-  Future<BaseModel?> forgotPassword({
-    required String email,
-  }) async {
+  Future<BaseModel?> forgotPassword({required String email}) async {
     try {
-      final body = {
-        'email': email,
-      };
+      final body = {'email': email};
 
       final response = await _apiService.post(
         _forgotPasswordEndpoint,
@@ -160,7 +144,7 @@ class UserService implements AuthRefreshService {
   }) async {
     try {
       final body = <String, dynamic>{};
-      
+
       if (firstName != null) body['firstName'] = firstName;
       if (lastName != null) body['lastName'] = lastName;
       if (phoneNumber != null) body['phoneNumber'] = phoneNumber;
@@ -186,15 +170,9 @@ class UserService implements AuthRefreshService {
   }
 
   /// Get authentication token using username and secret
-  Future<bool> getAuthToken({
-    required String username,
-    required String secret,
-  }) async {
+  Future<bool> getAuthToken({required String username, required String secret}) async {
     try {
-      final body = {
-        "username": username,
-        "secret": secret,
-      };
+      final body = {"username": username, "secret": secret};
 
       final response = await _apiService.postExpectString(
         authTokenUrl,
@@ -205,10 +183,7 @@ class UserService implements AuthRefreshService {
 
       if (response != null) {
         // Centralized token writing logic
-        await localStorageService.writeSecureString(
-          key: userTokenKey,
-          value: response,
-        );
+        await localStorageService.writeSecureString(key: userTokenKey, value: response);
         log('Auth token written to secure storage');
         return true;
       }
@@ -220,9 +195,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Check account status by email
-  Future<(int?, int?)> checkAccountStatus({
-    required String email,
-  }) async {
+  Future<(int?, int?)> checkAccountStatus({required String email}) async {
     try {
       final (response, statusCode) = await _apiService.get(
         '$accountsLink/$email/status',
@@ -231,8 +204,7 @@ class UserService implements AuthRefreshService {
         showResult: true,
       );
 
-      if (response != null && statusCode != null && 
-          (statusCode == 200 || statusCode == 201)) {
+      if (response != null && statusCode != null && (statusCode == 200 || statusCode == 201)) {
         int data = response['data'];
         return (data, statusCode);
       }
@@ -244,10 +216,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Sign up user with email and password
-  Future<(bool, int?)> signupWithEmailPassword({
-    required String email,
-    required String password,
-  }) async {
+  Future<(bool, int?)> signupWithEmailPassword({required String email, required String password}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/sign-up-password',
@@ -256,8 +225,7 @@ class UserService implements AuthRefreshService {
         showResult: true,
       );
 
-      if (response != null &&
-          (response.statusCode == 200 || response.statusCode == 201)) {
+      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
         return (true, response.statusCode);
       }
       return (false, response?.statusCode);
@@ -268,10 +236,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Login user and get auth token
-  Future<(String?, int?)> loginAndGetAuthToken({
-    required String email,
-    required String password,
-  }) async {
+  Future<(String?, int?)> loginAndGetAuthToken({required String email, required String password}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/login',
@@ -280,26 +245,16 @@ class UserService implements AuthRefreshService {
         showResult: true,
       );
 
-      if (response != null &&
-          (response.statusCode == 200 || response.statusCode == 201)) {
+      if (response != null && (response.statusCode == 200 || response.statusCode == 201)) {
         Map<String, dynamic> authData = jsonDecode(response.body);
         String authToken = authData['data'];
-        
+
         // Centralized token writing logic
-        await localStorageService.writeSecureString(
-          key: userAuthTokenKey,
-          value: authToken,
-        );
-        await localStorageService.writeSecureString(
-          key: userEmailKey,
-          value: email,
-        );
-        await localStorageService.writeSecureString(
-          key: userPasswordKey,
-          value: password,
-        );
+        await localStorageService.writeSecureString(key: userAuthTokenKey, value: authToken);
+        await localStorageService.writeSecureString(key: userEmailKey, value: email);
+        await localStorageService.writeSecureString(key: userPasswordKey, value: password);
         log('Auth token written to secure storage');
-        
+
         return (authToken, response.statusCode);
       }
       return (null, response?.statusCode);
@@ -310,9 +265,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Get user profile with authentication
-  Future<UserModel?> getUserProfile({
-    required String email,
-  }) async {
+  Future<UserModel?> getUserProfile({required String email}) async {
     try {
       final (response, statusCode) = await _apiService.get(
         '$accountsLink/$email/user-profile',
@@ -326,14 +279,10 @@ class UserService implements AuthRefreshService {
         // Create UserModel with the actual statusCode and extract user data
         final userData = response['data'] ?? {};
         final messages = response['messages'] ?? <String>[];
-        
+
         // Create UserModel from the data and include statusCode from response
-        final userModel = UserModel.fromMap({
-          ...userData,
-          'statusCode': statusCode,
-          'messages': messages,
-        });
-        
+        final userModel = UserModel.fromMap({...userData, 'statusCode': statusCode, 'messages': messages});
+
         return userModel;
       }
       return null;
@@ -344,10 +293,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Verify OTP for email verification
-  Future<(int?, BaseModel?)> verifyEmailOtp({
-    required String email,
-    required String otp,
-  }) async {
+  Future<(int?, BaseModel?)> verifyEmailOtp({required String email, required String otp}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/verify',
@@ -360,13 +306,10 @@ class UserService implements AuthRefreshService {
         final responseData = jsonDecode(response.body);
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return (data as int?, baseModel);
       }
       return (null, null);
@@ -377,9 +320,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Complete user profile (requires authentication)
-  Future<UserModel?> completeUserProfile({
-    required UserModel user,
-  }) async {
+  Future<UserModel?> completeUserProfile({required UserModel user}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/${user.email}/profile',
@@ -392,14 +333,10 @@ class UserService implements AuthRefreshService {
       if (response != null) {
         final responseData = jsonDecode(response.body);
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create UserModel with statusCode and messages from response
-        final userModel = UserModel.fromMap({
-          ...responseData,
-          'statusCode': response.statusCode,
-          'messages': messages,
-        });
-        
+        final userModel = UserModel.fromMap({...responseData, 'statusCode': response.statusCode, 'messages': messages});
+
         return userModel;
       }
       return null;
@@ -410,9 +347,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Resend OTP verification code
-  Future<BaseModel?> resendOtp({
-    required String email,
-  }) async {
+  Future<BaseModel?> resendOtp({required String email}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/resend-verification-code',
@@ -424,13 +359,10 @@ class UserService implements AuthRefreshService {
       if (response != null) {
         final responseData = jsonDecode(response.body);
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return baseModel;
       }
       return null;
@@ -441,9 +373,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Send forgot password email
-  Future<(int?, BaseModel?)> sendForgotPasswordEmail({
-    required String email,
-  }) async {
+  Future<(int?, BaseModel?)> sendForgotPasswordEmail({required String email}) async {
     try {
       final response = await _apiService.postWithResponseWithoutBody(
         '$accountsLink/$email/forgot-password',
@@ -455,13 +385,10 @@ class UserService implements AuthRefreshService {
         final responseData = jsonDecode(response.body);
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return (data as int?, baseModel);
       }
       return (null, null);
@@ -472,9 +399,7 @@ class UserService implements AuthRefreshService {
   }
 
   /// Resend forgot password email verification code
-  Future<(bool?, BaseModel?)> resendForgotPasswordEmail({
-    required String email,
-  }) async {
+  Future<(bool?, BaseModel?)> resendForgotPasswordEmail({required String email}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/forgot-password/resend-verification-code',
@@ -487,13 +412,10 @@ class UserService implements AuthRefreshService {
         final responseData = jsonDecode(response.body);
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return (data as bool?, baseModel);
       }
       return (null, null);
@@ -505,10 +427,7 @@ class UserService implements AuthRefreshService {
 
   /// Verify forgot password OTP
   /// Returns (int?, BaseModel?) tuple where int represents verification result and BaseModel contains response metadata
-  Future<(int?, BaseModel?)> verifyForgotPasswordOtp({
-    required String email,
-    required String otp,
-  }) async {
+  Future<(int?, BaseModel?)> verifyForgotPasswordOtp({required String email, required String otp}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/forgot-password/verify',
@@ -521,13 +440,10 @@ class UserService implements AuthRefreshService {
         final responseData = jsonDecode(response.body);
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return (data as int?, baseModel);
       }
       return (null, null);
@@ -539,10 +455,7 @@ class UserService implements AuthRefreshService {
 
   /// Reset forgot password
   /// Returns (bool?, BaseModel?) tuple where bool indicates success and BaseModel contains response metadata
-  Future<(bool?, BaseModel?)> resetForgotPassword({
-    required String email,
-    required String password,
-  }) async {
+  Future<(bool?, BaseModel?)> resetForgotPassword({required String email, required String password}) async {
     try {
       final response = await _apiService.postWithResponse(
         '$accountsLink/$email/reset-password',
@@ -555,13 +468,10 @@ class UserService implements AuthRefreshService {
         final responseData = jsonDecode(response.body);
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: response.statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: response.statusCode, messages: List<String>.from(messages));
+
         return (data as bool?, baseModel);
       }
       return (null, null);
@@ -573,29 +483,24 @@ class UserService implements AuthRefreshService {
 
   /// Check username availability
   /// Returns (bool?, BaseModel?) tuple where bool indicates username availability and BaseModel contains response metadata
-  Future<(bool?, BaseModel?)> checkUsernameAvailability({
-    required String username,
-  }) async {
+  Future<(bool?, BaseModel?)> checkUsernameAvailability({required String username}) async {
     try {
       final response = await _apiService.get(
         '$accountsLink/$username/check-username',
         false, // not basic, requires auth token
         isAuth: true,
       );
-      
+
       final responseData = response.$1;
       final statusCode = response.$2;
-      
+
       if (responseData != null && statusCode != null) {
         final data = responseData['data'];
         final messages = responseData['messages'] ?? <String>[];
-        
+
         // Create BaseModel with statusCode and messages
-        final baseModel = BaseModel(
-          statusCode: statusCode,
-          messages: List<String>.from(messages),
-        );
-        
+        final baseModel = BaseModel(statusCode: statusCode, messages: List<String>.from(messages));
+
         return (data as bool?, baseModel);
       }
       return (null, null);
@@ -632,12 +537,8 @@ class UserService implements AuthRefreshService {
       // Implement your token refresh logic here
       // This method will be called by APIService on 401/403 errors
       log('Refreshing authentication token...');
-      
-      await getAuthToken(
-        username: globalUsername!,
-        secret: globalUSecret!,
-      );
-      
+
+      await getAuthToken(username: globalUsername!, secret: globalUSecret!);
     } catch (e) {
       log('Error refreshing auth token: $e');
     }
@@ -648,17 +549,13 @@ class UserService implements AuthRefreshService {
   Future<void> refreshAuthUserToken() async {
     try {
       log('Refreshing auth user token...');
-      
+
       // Get the current user's email from global user model
       final userEmail = await localStorageService.readSecureString(key: userEmailKey);
       final userPassword = await localStorageService.readSecureString(key: userPasswordKey);
-      
+
       // Get auth token using login credentials
-      await loginAndGetAuthToken(
-        email: userEmail!,
-        password: userPassword!,
-      );
-      
+      await loginAndGetAuthToken(email: userEmail!, password: userPassword!);
     } catch (e) {
       log('Error refreshing auth user token: $e');
     }

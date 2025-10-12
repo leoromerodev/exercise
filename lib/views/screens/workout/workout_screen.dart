@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_sizes.dart';
+import 'package:heavek/views/screens/workout/exercises_screen.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/screens/workout/exercise_wizard_screen_1.dart';
 
@@ -12,7 +13,7 @@ class WorkoutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: AppSizes.DEFAULT,
+        padding: AppSizes.defaultPadding,
         child: Column(
           children: [
             const SizedBox(height: 60),
@@ -25,26 +26,16 @@ class WorkoutScreen extends StatelessWidget {
               height: 56,
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Get.to(
-                    () => const ExerciseWizardScreen1(
-                      exerciseName: "New Exercise",
-                    ),
-                  );
+                  Get.to(() => const ExercisesScreen());
                 },
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: const Icon(Icons.list_alt, color: kSecondaryColor),
                 label: const Text(
-                  'Create New Exercise',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  'View All Exercises',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: kSecondaryColor),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(28),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                 ),
               ),
             ),
@@ -58,7 +49,7 @@ class WorkoutScreen extends StatelessWidget {
           Get.to(() => const ExerciseWizardScreen1(exerciseName: "Push-up"));
         },
         backgroundColor: kPrimaryColor,
-        child: const Icon(Icons.fitness_center, color: Colors.white),
+        child: const Icon(Icons.fitness_center, color: kSecondaryColor),
       ),
     );
   }

@@ -9,7 +9,7 @@ import 'package:heavek/views/widgets/my_text.dart';
 import 'package:pinput/pinput.dart';
 
 class VerificationScreen extends StatefulWidget {
-  VerificationScreen({super.key});
+  const VerificationScreen({super.key});
 
   @override
   State<VerificationScreen> createState() => _VerificationScreenState();
@@ -18,7 +18,7 @@ class VerificationScreen extends StatefulWidget {
 class _VerificationScreenState extends State<VerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _pinFocusNode = FocusNode();
-  
+
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
 
@@ -42,29 +42,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
     final defaultPinTheme = PinTheme(
       width: 60,
       height: 60,
-      textStyle: const TextStyle(
-        fontSize: 22,
-        color: Colors.black87,
-        fontWeight: FontWeight.w600,
-      ),
+      textStyle: const TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
-        border: Border.all(color: Color(0xff05212F).withOpacity(0.14)),
+        border: Border.all(color: Color(0xff05212F).withValues(alpha: 0.14)),
         borderRadius: BorderRadius.circular(12),
       ),
     );
     return Scaffold(
       body: Padding(
-        padding: AppSizes.DEFAULT,
+        padding: AppSizes.defaultPadding,
 
         child: Column(
           children: [
             const SizedBox(height: 60),
             Center(
-              child: MyText(
-                text: 'Enter your code',
-                weight: FontWeight.w700,
-                size: 20,
-              ),
+              child: MyText(text: 'Enter your code', weight: FontWeight.w700, size: 20),
             ),
             SizedBox(height: 20),
             Center(
@@ -85,9 +77,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 length: 6, // number of boxes
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: defaultPinTheme.copyWith(
-                  decoration: defaultPinTheme.decoration!.copyWith(
-                    border: Border.all(color: Colors.blue, width: 2),
-                  ),
+                  decoration: defaultPinTheme.decoration!.copyWith(border: Border.all(color: Colors.blue, width: 2)),
                 ),
                 submittedPinTheme: defaultPinTheme,
                 // Set pre-filled value
@@ -125,22 +115,14 @@ class _VerificationScreenState extends State<VerificationScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                MyText(
-                  text: 'Didn’t get the code? ',
-                  color: kLightTextColor,
-                  weight: FontWeight.w500,
-                  size: 14,
-                ),
+                MyText(text: 'Didn’t get the code? ', color: kLightTextColor, weight: FontWeight.w500, size: 14),
                 MyText(
                   text: 'Send Again',
                   color: kHighlightColor,
                   weight: FontWeight.w500,
                   size: 14,
                   onTap: () async {
-                    await authController.resendOtp(
-                      email: authController.emailController.text.trim(),
-                      context: context,
-                    );
+                    await authController.resendOtp(email: authController.emailController.text.trim(), context: context);
                   },
                 ),
               ],

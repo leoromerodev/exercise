@@ -13,7 +13,7 @@ import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
 class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocusNode = FocusNode();
   bool _isPasswordVisible = false;
-  
+
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
 
@@ -48,16 +48,12 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: AppSizes.DEFAULT,
+          padding: AppSizes.defaultPadding,
           child: Column(
             children: [
               const SizedBox(height: 60),
               Center(
-                child: MyText(
-                  text: 'Welcome Back',
-                  weight: FontWeight.w700,
-                  size: 20,
-                ),
+                child: MyText(text: 'Welcome Back', weight: FontWeight.w700, size: 20),
               ),
               SizedBox(height: 35),
               MyTextfield(
@@ -66,12 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: 'test@email.com',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
-                  child: CommonImageView(
-                    imagePath: Assets.imagesEmailIcon,
-                    height: 20,
-                    width: 20,
-                    fit: BoxFit.cover,
-                  ),
+                  child: CommonImageView(imagePath: Assets.imagesEmailIcon, height: 20, width: 20, fit: BoxFit.cover),
                 ),
                 validator: (value) => validationService.emailValidator(value),
               ),
@@ -96,9 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                   child: Icon(
-                    _isPasswordVisible 
-                        ? Icons.visibility_outlined 
-                        : Icons.visibility_off_outlined,
+                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     color: Color(0xff7A8094),
                     size: 18,
                   ),
@@ -138,12 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  MyText(
-                    text: 'Don\'t have an account? ',
-                    color: kLightTextColor,
-                    weight: FontWeight.w500,
-                    size: 14,
-                  ),
+                  MyText(text: 'Don\'t have an account? ', color: kLightTextColor, weight: FontWeight.w500, size: 14),
                   MyText(
                     text: 'Sign Up',
                     color: kHighlightColor,

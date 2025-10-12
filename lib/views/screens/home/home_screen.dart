@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppSizes.DEFAULT,
+      padding: AppSizes.defaultPadding,
       child: Column(
         children: [
           const SizedBox(height: 60),
@@ -151,3 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+
+
+

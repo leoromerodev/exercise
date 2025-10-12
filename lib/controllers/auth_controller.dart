@@ -34,11 +34,8 @@ class AuthController extends GetxController {
   final UserService _userService = UserService.instance;
 
   Future<void> getAuthToken() async {
-    final success = await _userService.getAuthToken(
-      username: globalUsername!,
-      secret: globalUSecret!,
-    );
-    
+    final success = await _userService.getAuthToken(username: globalUsername!, secret: globalUSecret!);
+
     log('Auth token retrieval: ${success ? "Success" : "Failed"}');
   }
 
@@ -52,23 +49,16 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> checkAccountStatus({
-    required String email,
-    required BuildContext context,
-  }) async {
+  Future<void> checkAccountStatus({required String email, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
+
     final (data, statusCode) = await _userService.checkAccountStatus(email: email);
-    
-    if (statusCode != null && data != null &&
-        (statusCode == 200 || statusCode == 201)) {
+
+    if (statusCode != null && data != null && (statusCode == 200 || statusCode == 201)) {
       if (data == 1) {
         //AccountExist
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Account already exist, Try Login!',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Account already exist, Try Login!');
       } else if (data == 2) {
         //EmailVerified
         dialogService.hideLoading(context);
@@ -95,98 +85,71 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    
+
     // Clear any existing user data to prevent old data persistence
     clearUserGlobalState();
-    
+
     // Step 1: Sign up with email and password
     final (signupSuccess, signupStatusCode) = await _userService.signupWithEmailPassword(
       email: email,
       password: toBase64(password),
     );
-    
-    if (signupSuccess && signupStatusCode != null &&
-        (signupStatusCode == 200 || signupStatusCode == 201)) {
-      
+
+    if (signupSuccess && signupStatusCode != null && (signupStatusCode == 200 || signupStatusCode == 201)) {
       // Step 2: Login and get auth token
       final (authToken, loginStatusCode) = await _userService.loginAndGetAuthToken(
         email: email,
         password: toBase64(password),
       );
 
-      if (authToken != null && loginStatusCode != null &&
-          (loginStatusCode == 200 || loginStatusCode == 201)) {
-        
+      if (authToken != null && loginStatusCode != null && (loginStatusCode == 200 || loginStatusCode == 201)) {
         // Step 3: Get user profile
-        final userProfile = await getUserProfile(
-          email: email,
-        );
-        
-        if (userProfile != null && 
-            (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+        final userProfile = await getUserProfile(email: email);
+
+        if (userProfile != null && (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
           userModelGlobal.value = userProfile;
-          
+
           if ((userModelGlobal.value?.firstName?.isEmpty ?? true) ||
               (userModelGlobal.value?.screenName?.isEmpty ?? true)) {
-            dialogService.hideLoading(context);
+            if (context.mounted) dialogService.hideLoading(context);
             Get.offAll(() => CompleteProfileScreen());
           } else {
-            dialogService.hideLoading(context);
-            customSnackBars.showSuccessSnackBar(
-              title: 'Success',
-              message: 'Signup Successfull',
-            );
+            if (context.mounted) dialogService.hideLoading(context);
+            customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Signup Successfull');
             resetValues();
             Get.offAll(() => BottomNavBar());
           }
         } else {
-          dialogService.hideLoading(context);
+          if (context.mounted) dialogService.hideLoading(context);
         }
       } else {
-        dialogService.hideLoading(context);
+        if (context.mounted) dialogService.hideLoading(context);
       }
     } else {
-      dialogService.hideLoading(context);
+      if (context.mounted) dialogService.hideLoading(context);
     }
   }
 
-  Future<void> verifyOTP({
-    required String email,
-    required String otp,
-    required BuildContext context,
-  }) async {
+  Future<void> verifyOTP({required String email, required String otp, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
-    final (data, baseModel) = await _userService.verifyEmailOtp(
-      email: email,
-      otp: otp,
-    );
-    
-    if (baseModel != null && data != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+
+    final (data, baseModel) = await _userService.verifyEmailOtp(email: email, otp: otp);
+
+    if (baseModel != null && data != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 1) {
         // Verification Success
         dialogService.hideLoading(context);
-        customSnackBars.showSuccessSnackBar(
-          title: 'Success',
-          message: 'Code Verified Successfully.',
-        );
+        customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Code Verified Successfully.');
         otpController.clear();
         Get.offAll(() => SetPasswordScreen());
       } else if (data == 2) {
         // Invalid code or email
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Invalid Code or Email, Try again.',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Invalid Code or Email, Try again.');
       } else if (data == 3) {
         // code expired
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Code Expired',
-          message: 'Try sending code again.',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Code Expired', message: 'Try sending code again.');
       } else {
         dialogService.hideLoading(context);
       }
@@ -201,125 +164,91 @@ class AuthController extends GetxController {
     required BuildContext context,
   }) async {
     dialogService.showProgressDialog(context: context);
-    
+
     // Clear any existing user data to prevent old data persistence
     clearUserGlobalState();
-    
+
     // Step 1: Login and get auth token
     final (authToken, loginStatusCode) = await _userService.loginAndGetAuthToken(
       email: email,
       password: toBase64(password),
     );
-    
+
     log('login res code : $loginStatusCode');
 
-    if (authToken!= null && loginStatusCode != null &&
-        (loginStatusCode == 200 || loginStatusCode == 201)) {
-      
+    if (authToken != null && loginStatusCode != null && (loginStatusCode == 200 || loginStatusCode == 201)) {
       // Store auth token
-      await localStorageService.writeSecureString(
-        key: userAuthTokenKey,
-        value: authToken,
-      );
+      await localStorageService.writeSecureString(key: userAuthTokenKey, value: authToken);
 
       // Step 2: Get user profile
-      final userProfile = await getUserProfile(
-        email: email,
-      );
-      
-      if (userProfile != null &&
-          (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+      final userProfile = await getUserProfile(email: email);
+
+      if (userProfile != null && (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
         userModelGlobal.value = userProfile;
-        
+
         if ((userModelGlobal.value?.firstName?.isEmpty ?? true) ||
             (userModelGlobal.value?.screenName?.isEmpty ?? true)) {
           passwordController.clear();
-          dialogService.hideLoading(context);
+          if (context.mounted) dialogService.hideLoading(context);
           Get.offAll(() => CompleteProfileScreen());
         } else {
-          dialogService.hideLoading(context);
-          customSnackBars.showSuccessSnackBar(
-            title: 'Success',
-            message: 'Login Successfull',
-          );
+          if (context.mounted) dialogService.hideLoading(context);
+          customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Login Successfull');
           resetValues();
           Get.offAll(() => BottomNavBar());
         }
       } else {
-        dialogService.hideLoading(context);
+        if (context.mounted) dialogService.hideLoading(context);
       }
     } else {
       dialogService.hideLoading(context);
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: 'Invalid credentials',
-      );
+      customSnackBars.showFailureSnackBar(title: 'Error', message: 'Invalid credentials');
     }
   }
 
-  Future<void> completeUserProfile({
-    required UserModel user,
-    required BuildContext context,
-  }) async {
+  Future<void> completeUserProfile({required UserModel user, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
+
     final userProfile = await _userService.completeUserProfile(user: user);
 
-    if (userProfile != null && 
-        (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
+    if (userProfile != null && (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
       userModelGlobal.value = userProfile;
-      
-      dialogService.hideLoading(context);
-      customSnackBars.showSuccessSnackBar(
-        title: 'Success',
-        message: 'Profile updated successfully.',
-      );
+
+      if (context.mounted) dialogService.hideLoading(context);
+      customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Profile updated successfully.');
       resetValues();
       Get.offAll(() => BottomNavBar());
     } else {
-      dialogService.hideLoading(context);
-      
+      if (context.mounted) dialogService.hideLoading(context);
+
       // Extract error messages from UserModel (since it inherits from BaseModel)
       String errorMessage = 'Profile update failed';
       if (userProfile != null && userProfile.messages.isNotEmpty) {
         errorMessage = userProfile.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
-  Future<void> resendOtp({
-    required String email,
-    required BuildContext context,
-  }) async {
+  Future<void> resendOtp({required String email, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
+
     final baseModel = await _userService.resendOtp(email: email);
-    
-    if (baseModel != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
-      dialogService.hideLoading(context);
-      customSnackBars.showSuccessSnackBar(
-        title: 'Success',
-        message: 'OTP resent to your email',
-      );
+
+    if (baseModel != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+      if (context.mounted) dialogService.hideLoading(context);
+      customSnackBars.showSuccessSnackBar(title: 'Success', message: 'OTP resent to your email');
     } else {
-      dialogService.hideLoading(context);
-      
+      if (context.mounted) dialogService.hideLoading(context);
+
       // Extract error messages from BaseModel if available
       String errorMessage = 'Failed to resend OTP';
       if (baseModel != null && baseModel.messages.isNotEmpty) {
         errorMessage = baseModel.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
@@ -329,89 +258,63 @@ class AuthController extends GetxController {
     await localStorageService.deleteSecureKey(key: userTokenKey);
     await localStorageService.deleteSecureKey(key: userEmailKey);
     await localStorageService.deleteSecureKey(key: userPasswordKey);
-    
+
     // Clear global user model to prevent old data persistence
     userModelGlobal.value = null;
-    
+
     Get.offAll(() => AuthScreen());
   }
 
-  Future<void> sendForgetPasswordEmail({
-    required String email,
-    required BuildContext context,
-  }) async {
+  Future<void> sendForgetPasswordEmail({required String email, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
+
     final (data, baseModel) = await _userService.sendForgotPasswordEmail(email: email);
-    
-    if (baseModel != null && data != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+
+    if (baseModel != null && data != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 2) {
         dialogService.hideLoading(context);
-        customSnackBars.showSuccessSnackBar(
-          title: 'Success',
-          message: 'Email sent successfully',
-        );
+        customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Email sent successfully');
         Get.off(() => ForgotPasswordVerificationScreen());
       } else {
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Error sending email, Try again!',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Error sending email, Try again!');
       }
     } else {
       dialogService.hideLoading(context);
-      
+
       // Extract error messages from BaseModel if available
       String errorMessage = 'Error sending email, Try again!';
       if (baseModel != null && baseModel.messages.isNotEmpty) {
         errorMessage = baseModel.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
-  Future<void> resendForgetPasswordEmail({
-    required String email,
-    required BuildContext context,
-  }) async {
+  Future<void> resendForgetPasswordEmail({required String email, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
+
     final (data, baseModel) = await _userService.resendForgotPasswordEmail(email: email);
-    
-    if (baseModel != null && data != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+
+    if (baseModel != null && data != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data) {
         dialogService.hideLoading(context);
-        customSnackBars.showSuccessSnackBar(
-          title: 'Success',
-          message: 'Email sent successfully',
-        );
+        customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Email sent successfully');
       } else {
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Error sending email, Try again!',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Error sending email, Try again!');
       }
     } else {
       dialogService.hideLoading(context);
-      
+
       // Extract error messages from BaseModel if available
       String errorMessage = 'Error sending email, Try again!';
       if (baseModel != null && baseModel.messages.isNotEmpty) {
         errorMessage = baseModel.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
@@ -422,100 +325,69 @@ class AuthController extends GetxController {
   }) async {
     log('otp : $otp');
     dialogService.showProgressDialog(context: context);
-    
-    final (data, baseModel) = await _userService.verifyForgotPasswordOtp(
-      email: email,
-      otp: otp,
-    );
-    
-    if (baseModel != null && data != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+
+    final (data, baseModel) = await _userService.verifyForgotPasswordOtp(email: email, otp: otp);
+
+    if (baseModel != null && data != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data == 1) {
         dialogService.hideLoading(context);
-        customSnackBars.showSuccessSnackBar(
-          title: 'Success',
-          message: 'Code verification successfull',
-        );
+        customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Code verification successfull');
         otpController.clear();
         Get.off(() => ChangePasswordScreen());
       } else {
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Invalid code or email',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Invalid code or email');
       }
     } else {
       dialogService.hideLoading(context);
-      
+
       // Extract error messages from BaseModel if available
       String errorMessage = 'Invalid code or email';
       if (baseModel != null && baseModel.messages.isNotEmpty) {
         errorMessage = baseModel.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
-  Future<void> resetPassword({
-    required String email,
-    required String password,
-    required BuildContext context,
-  }) async {
+  Future<void> resetPassword({required String email, required String password, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
-    
-    final (data, baseModel) = await _userService.resetForgotPassword(
-      email: email,
-      password: toBase64(password),
-    );
-    
-    if (baseModel != null && data != null &&
-        (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
+
+    final (data, baseModel) = await _userService.resetForgotPassword(email: email, password: toBase64(password));
+
+    if (baseModel != null && data != null && (baseModel.statusCode == 200 || baseModel.statusCode == 201)) {
       if (data) {
         dialogService.hideLoading(context);
         resetValues();
         Get.back();
-        customSnackBars.showSuccessSnackBar(
-          title: 'Success',
-          message: 'Password reset successfull',
-        );
+        customSnackBars.showSuccessSnackBar(title: 'Success', message: 'Password reset successfull');
       } else {
         dialogService.hideLoading(context);
-        customSnackBars.showFailureSnackBar(
-          title: 'Error',
-          message: 'Error re-setting password, Try again later',
-        );
+        customSnackBars.showFailureSnackBar(title: 'Error', message: 'Error re-setting password, Try again later');
       }
     } else {
       dialogService.hideLoading(context);
-      
+
       // Extract error messages from BaseModel if available
       String errorMessage = 'Invalid Password';
       if (baseModel != null && baseModel.messages.isNotEmpty) {
         errorMessage = baseModel.messages.join('\n');
       }
-      
-      customSnackBars.showFailureSnackBar(
-        title: 'Error',
-        message: errorMessage,
-      );
+
+      customSnackBars.showFailureSnackBar(title: 'Error', message: errorMessage);
     }
   }
 
   Future<bool> checkUserName({required String userName}) async {
     isLoading(true);
-    
-    final (data, baseModel) = await _userService.checkUsernameAvailability(
-      username: userName,
-    );
-    
+
+    final (data, baseModel) = await _userService.checkUsernameAvailability(username: userName);
+
     log('Response Data : $data');
-    
-    if (baseModel != null && data != null && 
+
+    if (baseModel != null &&
+        data != null &&
         (baseModel.statusCode == 200 || baseModel.statusCode == 201) &&
         data == true) {
       isLoading(false);

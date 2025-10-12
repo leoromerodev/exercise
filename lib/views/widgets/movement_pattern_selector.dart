@@ -73,7 +73,7 @@ class _MovementPatternSelectorState extends State<MovementPatternSelector> {
             size: 18,
             weight: AppFontWeight.semiBold,
             color: kTextColorPrimary,
-            fontFamily: AppFonts.Montserrat,
+            fontFamily: AppFonts.montserrat,
           ),
 
           // Optional subheading
@@ -86,7 +86,7 @@ class _MovementPatternSelectorState extends State<MovementPatternSelector> {
               size: 13,
               weight: AppFontWeight.regular,
               color: kTextColorSecondary,
-              fontFamily: AppFonts.OpenSans,
+              fontFamily: AppFonts.openSans,
             ),
           ],
 

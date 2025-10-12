@@ -51,7 +51,7 @@ class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
           size: 18,
           weight: AppFontWeight.bold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         centerTitle: true,
         actions: [
@@ -98,7 +98,7 @@ class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
                 size: 12,
                 weight: AppFontWeight.medium,
                 color: kTextColorPrimary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
             const SizedBox(height: 8.0),

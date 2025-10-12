@@ -221,7 +221,7 @@ class _TrainingCategoriesSelectorState
             size: 18,
             weight: AppFontWeight.semiBold,
             color: kTextColorPrimary,
-            fontFamily: AppFonts.Montserrat,
+            fontFamily: AppFonts.montserrat,
           ),
 
           // Optional subheading
@@ -234,7 +234,7 @@ class _TrainingCategoriesSelectorState
               size: 13,
               weight: AppFontWeight.regular,
               color: kTextColorSecondary,
-              fontFamily: AppFonts.OpenSans,
+              fontFamily: AppFonts.openSans,
             ),
           ],
 
@@ -382,7 +382,7 @@ class _TrainingCategoriesSelectorState
             size: 12,
             weight: AppFontWeight.medium,
             color: Colors.white,
-            fontFamily: AppFonts.Montserrat,
+            fontFamily: AppFonts.montserrat,
           ),
           if (onClose != null) ...[
             const SizedBox(width: 8),
@@ -422,7 +422,7 @@ class _TrainingCategoriesSelectorState
                     ? AppFontWeight.semiBold
                     : AppFontWeight.medium,
                 color: isSelected ? kTextColorPrimary : kTextColorSecondary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
             // Underline indicator
@@ -528,7 +528,7 @@ class _TrainingCategoriesSelectorState
                       size: 16,
                       weight: AppFontWeight.semiBold,
                       color: kTextColorPrimary,
-                      fontFamily: AppFonts.Montserrat,
+                      fontFamily: AppFonts.montserrat,
                     ),
                   ),
                   const SizedBox(height: 16),

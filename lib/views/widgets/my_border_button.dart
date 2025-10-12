@@ -3,7 +3,7 @@ import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 
 class MyBorderButton extends StatelessWidget {
-  MyBorderButton({
+  const MyBorderButton({super.key, 
     required this.buttonText,
     required this.onTap,
     this.bgColor = Colors.transparent,
@@ -56,3 +56,7 @@ class MyBorderButton extends StatelessWidget {
     );
   }
 }
+
+
+
+

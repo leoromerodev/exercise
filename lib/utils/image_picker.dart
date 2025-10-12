@@ -18,9 +18,7 @@ class ImagePickerService {
 
   Future<XFile?> pickImageFromCamera() async {
     try {
-      XFile? imgXFile = await ImagePicker().pickImage(
-        source: ImageSource.camera,
-      );
+      XFile? imgXFile = await ImagePicker().pickImage(source: ImageSource.camera);
       if (imgXFile == null) {
         return null;
       } else {
@@ -81,9 +79,7 @@ class ImagePickerService {
 
   Future<List<XFile>> pickMultiImagesFromGallery() async {
     try {
-      List<XFile> pickedImages = await ImagePicker().pickMultiImage(
-        imageQuality: 50,
-      );
+      List<XFile> pickedImages = await ImagePicker().pickMultiImage(imageQuality: 50);
       if (pickedImages.isEmpty) {
         return [];
       }
@@ -120,10 +116,7 @@ class ImagePickerService {
       backgroundColor: Colors.transparent,
       elevation: 0,
       builder: (_) {
-        return ImagePickerBottomSheet(
-          onCameraPick: onCameraPick,
-          onGalleryPick: onGalleryPick,
-        );
+        return ImagePickerBottomSheet(onCameraPick: onCameraPick, onGalleryPick: onGalleryPick);
       },
     );
   }

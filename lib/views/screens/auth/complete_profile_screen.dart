@@ -65,7 +65,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
         body: Form(
           key: _formKey,
           child: Padding(
-            padding: AppSizes.DEFAULT,
+            padding: AppSizes.defaultPadding,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -195,7 +195,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         fontSize: 14,
                         color: kHintColor,
                         fontWeight: FontWeight.w400,
-                        fontFamily: AppFonts.Montserrat,
+                        fontFamily: AppFonts.montserrat,
                       ),
                       isDense: true,
                       prefixIcon: Padding(
@@ -375,3 +375,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     });
   }
 }
+
+
+
+

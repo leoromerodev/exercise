@@ -13,13 +13,12 @@ class DialogService {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder:
-          (_) => PopScope(
-            canPop: false,
-            child: Center(
-              child: CircularProgressIndicator(color: kSecondaryColor),
-            ),
-          ),
+      builder: (_) => PopScope(
+        canPop: false,
+        child: Center(
+          child: CircularProgressIndicator(color: kSecondaryColor),
+        ),
+      ),
     );
   }
 
@@ -36,3 +35,4 @@ class DialogService {
     );
   }
 }
+

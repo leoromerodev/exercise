@@ -24,7 +24,7 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: AppSizes.DEFAULT,
+        padding: AppSizes.defaultPadding,
         child: Column(
           children: [
             const SizedBox(height: 60),
@@ -93,3 +93,7 @@ class SignupScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+

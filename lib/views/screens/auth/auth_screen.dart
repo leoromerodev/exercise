@@ -37,7 +37,7 @@ class AuthScreen extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: AppSizes.DEFAULT,
+              padding: AppSizes.defaultPadding,
               child: Column(
                 mainAxisSize: MainAxisSize.min, // only take needed height
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,3 +91,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+

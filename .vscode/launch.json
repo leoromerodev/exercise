@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter (Auto Hot Reload)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "deviceId": "YLGQFM4SBUVCA6LF",
+            "flutterMode": "debug"
+        },
+        {
+            "name": "Flutter (All Devices)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "debug"
+        }
+    ]
+}

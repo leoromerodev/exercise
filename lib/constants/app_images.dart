@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_single_quotes
 class Assets {
   Assets._();
-  
+
   /// Assets for imagesCoverImage
   /// assets/images/cover_image.png
   static const String imagesCoverImage = "assets/images/cover_image.png";
@@ -81,5 +81,39 @@ class Assets {
   /// Assets for imagesWarningIcon
   /// assets/images/warning_icon.png
   static const String imagesWarningIcon = "assets/images/warning_icon.png";
+
+  /// Assets for imagesFilterIcon
+  /// assets/images/filter_icon.svg
+  static const String imagesFilterIcon = "assets/images/filter_icon.svg";
+
+  /// Assets for exerciseDetailDefault
+  /// assets/images/exercise_det_def.png
+  static const String imagesExerciseDetailDefault = "assets/images/exercise_det_def.png";
+
+  /// Assets for imagesExerciseIcon56px
+  /// assets/images/exercise-icon-56px.png
+  static const String imagesExerciseIcon56px = "assets/images/exercise-icon-56px.png";
+
+  /// Assets for imagesPlusIcon
+  /// assets/images/plus-icon.png
+  static const String imagesPlusIcon = "assets/images/plus-icon.png";
+
+  /// Assets for imagesSettingsIcon
+  /// assets/images/settings-icon.png
+  static const String imagesSettingsIcon = "assets/images/settings-icon.png";
+
+  ///Static Images for mockup purposes
+  /// Assets for image_exercise
+  /// assets/images/image_push_lunges.png
+  static const String imagePushLunges = "assets/images/image_push_lunges.png";
+
+  /// assets/images/image_push_ups.png
+  static const String imagePushUps = "assets/images/image_push_ups.png";
+
+  /// assets/images/image_squats.png
+  static const String imageSquats = "assets/images/image_squats.png";
 }
+
+
+
 

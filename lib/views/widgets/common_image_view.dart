@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:heavek/constants/app_colors.dart';
 
 class CommonImageView extends StatelessWidget {
-// ignore_for_file: must_be_immutable
+  // ignore_for_file: must_be_immutable
   String? url;
   String? imagePath;
   String? svgPath;
@@ -15,7 +15,7 @@ class CommonImageView extends StatelessWidget {
   final BoxFit fit;
   final String placeHolder;
   final Color? borderColor;
-  
+
   // New properties for image upload functionality
   final VoidCallback? onTap;
   final bool isUploadable;
@@ -23,6 +23,7 @@ class CommonImageView extends StatelessWidget {
   final bool isCircular;
 
   CommonImageView({
+    super.key,
     this.url,
     this.imagePath,
     this.svgPath,
@@ -43,7 +44,7 @@ class CommonImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget imageWidget = _buildImageView();
-    
+
     // Wrap with GestureDetector if uploadable and onTap is provided
     if (isUploadable && onTap != null) {
       imageWidget = GestureDetector(
@@ -51,15 +52,12 @@ class CommonImageView extends StatelessWidget {
         child: Stack(
           children: [
             imageWidget,
-            if (uploadIndicator != null)
-              Positioned.fill(
-                child: uploadIndicator!,
-              ),
+            if (uploadIndicator != null) Positioned.fill(child: uploadIndicator!),
           ],
         ),
       );
     }
-    
+
     return imageWidget;
   }
 
@@ -71,12 +69,7 @@ class CommonImageView extends StatelessWidget {
         width: width,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(circularRadius),
-          child: SvgPicture.asset(
-            svgPath!,
-            height: height,
-            width: width,
-            fit: fit,
-          ),
+          child: SvgPicture.asset(svgPath!, height: height, width: width, fit: fit),
         ),
       );
     } else if (file != null && file!.path.isNotEmpty) {
@@ -86,10 +79,7 @@ class CommonImageView extends StatelessWidget {
         width: width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(circularRadius),
-          border: Border.all(
-            color: borderColor!,
-            width: borderWidth!,
-          ),
+          border: Border.all(color: borderColor!, width: borderWidth!),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(circularRadius),
@@ -106,10 +96,7 @@ class CommonImageView extends StatelessWidget {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(circularRadius),
-          border: Border.all(
-            color: borderColor!,
-            width: borderWidth!,
-          ),
+          border: Border.all(color: borderColor!, width: borderWidth!),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(circularRadius),
@@ -125,19 +112,11 @@ class CommonImageView extends StatelessWidget {
                 child: SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(
-                    color: kSecondaryColor,
-                    backgroundColor: Colors.grey.shade100,
-                  ),
+                  child: CircularProgressIndicator(color: kSecondaryColor, backgroundColor: Colors.grey.shade100),
                 ),
               ),
             ),
-            errorWidget: (context, url, error) => Image.asset(
-              placeHolder,
-              height: height,
-              width: width,
-              fit: fit,
-            ),
+            errorWidget: (context, url, error) => Image.asset(placeHolder, height: height, width: width, fit: fit),
           ),
         ),
       );
@@ -146,22 +125,14 @@ class CommonImageView extends StatelessWidget {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(circularRadius),
-          border: Border.all(
-            color: borderColor!,
-            width: borderWidth!,
-          ),
+          border: Border.all(color: borderColor!, width: borderWidth!),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(circularRadius),
-          child: Image.asset(
-            imagePath!,
-            height: height,
-            width: width,
-            fit: fit,
-          ),
+          child: Image.asset(imagePath!, height: height, width: width, fit: fit),
         ),
       );
     }
-    return SizedBox();
+    return SizedBox.shrink();
   }
 }

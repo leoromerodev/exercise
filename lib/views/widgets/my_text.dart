@@ -26,8 +26,8 @@ class MyText extends StatelessWidget {
 
   final TextStyle? textStyle;
 
-  MyText({
-    Key? key,
+  const MyText({
+    super.key,
     required this.text,
     this.size,
     this.lineHeight,
@@ -47,7 +47,7 @@ class MyText extends StatelessWidget {
     this.fontStyle,
     this.textStyle,
     this.decorationColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +69,7 @@ class MyText extends StatelessWidget {
                 color: color,
                 fontWeight: weight,
                 decoration: decoration,
-                fontFamily: fontFamily ?? AppFonts.Montserrat,
+                fontFamily: fontFamily ?? AppFonts.montserrat,
                 height: lineHeight,
                 fontStyle: fontStyle,
                 letterSpacing: letterSpacing,
@@ -83,3 +83,7 @@ class MyText extends StatelessWidget {
     );
   }
 }
+
+
+
+

@@ -1,0 +1,16 @@
+{
+    "dart.flutterHotReloadOnSave": "all",
+    "dart.flutterHotRestartOnSave": "never",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 1000,
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewFlutterUiGuidesCustomTracking": true,
+    "dart.hotReloadOnSave": "all",
+    "dart.automaticCommentSlashes": "all",
+    "editor.formatOnSave": true,
+    "dart.lineLength": 120,
+    "dart.debugSdkLibraries": false,
+    "dart.debugExternalLibraries": false,
+    "dart.enableSdkFormatter": true,
+    "dart.flutterRunLogFile": "${workspaceFolder}/.vscode/flutter.log"
+}

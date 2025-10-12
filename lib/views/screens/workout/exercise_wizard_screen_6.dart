@@ -41,7 +41,7 @@ class _ExerciseWizardScreen6State extends State<ExerciseWizardScreen6> {
           size: 18,
           weight: AppFontWeight.bold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         centerTitle: true,
         actions: [
@@ -88,7 +88,7 @@ class _ExerciseWizardScreen6State extends State<ExerciseWizardScreen6> {
                 size: 12,
                 weight: AppFontWeight.medium,
                 color: kTextColorPrimary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
             const SizedBox(height: 10.0),
@@ -116,7 +116,7 @@ class _ExerciseWizardScreen6State extends State<ExerciseWizardScreen6> {
                     size: 18,
                     weight: AppFontWeight.semiBold,
                     color: kTextColorPrimary,
-                    fontFamily: AppFonts.Montserrat,
+                    fontFamily: AppFonts.montserrat,
                   ),
                   const SizedBox(height: 8),
                   MyText(
@@ -124,7 +124,7 @@ class _ExerciseWizardScreen6State extends State<ExerciseWizardScreen6> {
                     size: 13,
                     weight: AppFontWeight.regular,
                     color: kTextColorSecondary,
-                    fontFamily: AppFonts.OpenSans,
+                    fontFamily: AppFonts.openSans,
                   ),
                   const SizedBox(height: 20.0),
 

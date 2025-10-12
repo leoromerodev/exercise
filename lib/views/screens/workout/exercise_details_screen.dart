@@ -8,17 +8,15 @@ import 'package:heavek/views/widgets/my_border_button.dart';
 import 'package:heavek/views/widgets/visual_muscle_selector.dart';
 import 'package:heavek/constants/muscle_roles.dart';
 
-enum ExerciseDetailsMode { preview, edit }
+enum ExerciseDetailsMode { preview, edit, create }
 
 class ExerciseDetailsScreen extends StatefulWidget {
-  final String exerciseName;
+  final String? exerciseId;
+  final String? exerciseName;
   final ExerciseDetailsMode mode;
 
-  const ExerciseDetailsScreen({
-    Key? key,
-    required this.exerciseName,
-    this.mode = ExerciseDetailsMode.edit,
-  }) : super(key: key);
+  const ExerciseDetailsScreen({Key? key, this.exerciseId, this.exerciseName, this.mode = ExerciseDetailsMode.preview})
+    : super(key: key);
 
   @override
   State<ExerciseDetailsScreen> createState() => _ExerciseDetailsScreenState();
@@ -35,12 +33,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
   int dislikeCount = 10;
   FeedbackType? selectedFeedback; // Track which feedback is selected
 
-  final List<String> tabTitles = [
-    'Muscles',
-    'Equipment',
-    'Instructions',
-    'Targets',
-  ];
+  final List<String> tabTitles = ['Muscles', 'Equipment', 'Instructions', 'Targets'];
 
   // Mock muscle data for the exercise
   final Set<String> selectedMuscles = {'chest', 'shoulders', 'triceps'};
@@ -51,12 +44,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
   };
 
   // Equipment data
-  final List<String> equipmentList = [
-    'Treadmill',
-    'Ball',
-    'Dumbbells',
-    'Bands',
-  ];
+  final List<String> equipmentList = ['Treadmill', 'Ball', 'Dumbbells', 'Bands'];
 
   @override
   Widget build(BuildContext context) {
@@ -70,19 +58,16 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
         automaticallyImplyLeading: widget.mode == ExerciseDetailsMode.edit,
         leading: widget.mode == ExerciseDetailsMode.edit
             ? IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: kTextColorPrimary,
-                ),
+                icon: const Icon(Icons.arrow_back_ios, color: kTextColorPrimary),
                 onPressed: () => Get.back(),
               )
             : null,
         title: MyText(
-          text: widget.exerciseName,
+          text: widget.exerciseName ?? 'New Exercise',
           size: 18,
           weight: AppFontWeight.bold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         centerTitle: true,
         actions: widget.mode == ExerciseDetailsMode.preview
@@ -105,9 +90,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                   child: LinearProgressIndicator(
                     value: 1.0, // 8/8 = 100% complete
                     backgroundColor: Colors.white.withValues(alpha: 0.3),
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      kTertiaryColor,
-                    ),
+                    valueColor: const AlwaysStoppedAnimation<Color>(kTertiaryColor),
                   ),
                 ),
               )
@@ -125,7 +108,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                 size: 12,
                 weight: AppFontWeight.regular,
                 color: kTextColorSecondary,
-                fontFamily: AppFonts.OpenSans,
+                fontFamily: AppFonts.openSans,
               ),
             ),
             const SizedBox(height: 6),
@@ -158,16 +141,9 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                         onPressed: () => _onPublishExercise(),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: kSecondaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                         ),
-                        child: MyText(
-                          text: 'Publish',
-                          size: 16,
-                          weight: FontWeight.w600,
-                          color: kPrimaryColor,
-                        ),
+                        child: MyText(text: 'Publish', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                       ),
                     ),
                   ),
@@ -198,10 +174,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
     return Container(
       height: 200,
       width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.grey[200],
-      ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: Colors.grey[200]),
       child: Stack(
         children: [
           // Exercise Image
@@ -211,9 +184,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: const DecorationImage(
-                image: AssetImage(
-                  'assets/images/exercise_detail_placeholder.png',
-                ),
+                image: AssetImage('assets/images/exercise_detail_placeholder.png'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -241,11 +212,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
     );
   }
 
-  Widget _buildOverlayButton(
-    IconData icon,
-    String label, {
-    VoidCallback? onTap,
-  }) {
+  Widget _buildOverlayButton(IconData icon, String label, {VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -255,12 +222,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           children: [
             Icon(icon, color: Colors.white, size: 16),
             const SizedBox(width: 4),
-            MyText(
-              text: label,
-              size: 12,
-              weight: AppFontWeight.bold,
-              color: Colors.white,
-            ),
+            MyText(text: label, size: 12, weight: AppFontWeight.bold, color: Colors.white),
           ],
         ),
       ),
@@ -276,7 +238,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           size: 18,
           weight: AppFontWeight.semiBold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         const SizedBox(height: 8),
 
@@ -287,10 +249,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           decoration: BoxDecoration(
             color: kPrimaryColor,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.orange,
-              width: 0.5,
-            ), // Orange border
+            border: Border.all(color: Colors.orange, width: 0.5), // Orange border
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -303,12 +262,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              MyText(
-                text: 'High risk warning',
-                size: 12,
-                weight: AppFontWeight.medium,
-                color: Colors.black,
-              ),
+              MyText(text: 'High risk warning', size: 12, weight: AppFontWeight.medium, color: Colors.black),
               const SizedBox(height: 4),
               MyText(
                 text: 'People with heart condition should not',
@@ -326,9 +280,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           children: [
             Expanded(child: _buildDetailItem('Skill Level', 'Beginner')),
             const SizedBox(width: 16),
-            Expanded(
-              child: _buildDetailItem('Movement Pattern', 'Hinge, Push'),
-            ),
+            Expanded(child: _buildDetailItem('Movement Pattern', 'Hinge, Push')),
           ],
         ),
         const SizedBox(height: 16),
@@ -363,19 +315,9 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MyText(
-            text: label,
-            size: 11,
-            weight: AppFontWeight.regular,
-            color: kTextColorSecondary,
-          ),
+          MyText(text: label, size: 11, weight: AppFontWeight.regular, color: kTextColorSecondary),
           const SizedBox(height: 4),
-          MyText(
-            text: value,
-            size: 13,
-            weight: AppFontWeight.medium,
-            color: kTextColorPrimary,
-          ),
+          MyText(text: value, size: 13, weight: AppFontWeight.medium, color: kTextColorPrimary),
         ],
       ),
     );
@@ -390,7 +332,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           size: 18,
           weight: AppFontWeight.semiBold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         const SizedBox(height: 16),
         Row(
@@ -471,20 +413,14 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              isSelected ? filledIcon : outlineIcon,
-              size: 16,
-              color: iconColor,
-            ),
+            Icon(isSelected ? filledIcon : outlineIcon, size: 16, color: iconColor),
             const SizedBox(width: 6),
             MyText(
               text: '$label ($count)',
               size: 12,
-              weight: isSelected
-                  ? AppFontWeight.semiBold
-                  : AppFontWeight.medium,
+              weight: isSelected ? AppFontWeight.semiBold : AppFontWeight.medium,
               color: kTextColor,
-              fontFamily: AppFonts.Montserrat,
+              fontFamily: AppFonts.montserrat,
             ),
           ],
         ),
@@ -531,10 +467,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
               bottom: 0,
               left: 0,
               right: 0,
-              child: Container(
-                height: 1,
-                color: kTextColorPrimary.withValues(alpha: 0.26),
-              ),
+              child: Container(height: 1, color: kTextColorPrimary.withValues(alpha: 0.26)),
             ),
             // Tabs
             Row(
@@ -551,31 +484,20 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                            top: 6,
-                            bottom: 5,
-                            left: 0,
-                            right: 0,
-                          ),
+                          padding: const EdgeInsets.only(top: 6, bottom: 5, left: 0, right: 0),
                           child: MyText(
                             text: title,
                             size: isSelected ? 13 : 11,
-                            weight: isSelected
-                                ? AppFontWeight.semiBold
-                                : AppFontWeight.medium,
-                            color: isSelected
-                                ? kTextColorPrimary
-                                : kTextColorSecondary,
-                            fontFamily: AppFonts.Montserrat,
+                            weight: isSelected ? AppFontWeight.semiBold : AppFontWeight.medium,
+                            color: isSelected ? kTextColorPrimary : kTextColorSecondary,
+                            fontFamily: AppFonts.montserrat,
                           ),
                         ),
                         // Active indicator
                         Container(
                           height: 2,
                           width: double.infinity,
-                          color: isSelected
-                              ? kTextColorPrimary
-                              : Colors.transparent,
+                          color: isSelected ? kTextColorPrimary : Colors.transparent,
                         ),
                       ],
                     ),
@@ -681,10 +603,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: InteractiveViewer(
-                    child: Image.asset(
-                      'assets/images/equipment_placeholder.png',
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset('assets/images/equipment_placeholder.png', fit: BoxFit.contain),
                   ),
                 ),
                 // Close button (X) on top-right corner of image
@@ -696,15 +615,8 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
                     child: Container(
                       width: 36,
                       height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.7),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.7), shape: BoxShape.circle),
+                      child: const Icon(Icons.close, color: Colors.white, size: 20),
                     ),
                   ),
                 ),
@@ -749,25 +661,15 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
       children: [
         Row(
           children: [
-            Expanded(
-              child: _buildTargetCard(
-                'Weight',
-                Icons.fitness_center,
-                Colors.blue,
-              ),
-            ),
+            Expanded(child: _buildTargetCard('Weight', Icons.fitness_center, Colors.blue)),
             const SizedBox(width: 12),
-            Expanded(
-              child: _buildTargetCard('Reps', Icons.repeat, Colors.blue),
-            ),
+            Expanded(child: _buildTargetCard('Reps', Icons.repeat, Colors.blue)),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(
-              child: _buildTargetCard('Time', Icons.access_time, Colors.blue),
-            ),
+            Expanded(child: _buildTargetCard('Time', Icons.access_time, Colors.blue)),
             const SizedBox(width: 12),
             const Expanded(child: SizedBox()), // Empty space to maintain layout
           ],
@@ -782,32 +684,18 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Row(
         children: [
           Container(
             width: 35,
             height: 40,
-            decoration: BoxDecoration(
-              color: kTertiaryColor,
-              shape: BoxShape.circle,
-            ),
+            decoration: BoxDecoration(color: kTertiaryColor, shape: BoxShape.circle),
             child: Icon(icon, color: Colors.white, size: 20),
           ),
           const SizedBox(width: 12),
-          MyText(
-            text: title,
-            size: 14,
-            weight: AppFontWeight.medium,
-            color: kTextColorSecondary,
-          ),
+          MyText(text: title, size: 14, weight: AppFontWeight.medium, color: kTextColorSecondary),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:heavek/models/user/user_model.dart';
 import 'package:heavek/services/api_service/api_service.dart';
 import 'package:heavek/services/local_storage/local_storage_service.dart';
+import 'package:heavek/services/workout/exercise_service.dart';
 import 'package:heavek/services/user_service/user_service.dart';
 import 'package:heavek/utils/custom_snackbars.dart';
 import 'package:heavek/utils/dialogs.dart';
@@ -10,12 +11,12 @@ import 'package:heavek/utils/validators.dart';
 // Remove circular dependency - don't import AuthController here
 Rx<UserModel?> userModelGlobal = Rx<UserModel?>(null);
 
-
 final apiService = APIService.instance;
 final localStorageService = LocalStorageService.instance;
 final dialogService = DialogService.instance;
 final validationService = ValidationService.instance;
 final customSnackBars = CustomSnackBars.instance;
+final exerciseService = ExerciseService.instance;
 
 // Set up the auth refresh service after all instances are created
 void initializeServices() {
@@ -38,6 +39,6 @@ final userPasswordKey = "heavek_user_password";
 Future<bool> get isUserLogged async {
   String? token = await localStorageService.readSecureString(key: userTokenKey);
   String? authToken = await localStorageService.readSecureString(key: userAuthTokenKey);
-  
+
   return (token?.isNotEmpty ?? false) && (authToken?.isNotEmpty ?? false);
 }
