@@ -55,9 +55,7 @@ class WorkoutScreen extends StatelessWidget {
       // Floating Action Button Alternative
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Get.to(
-            () => const ExerciseWizardScreen1(exerciseName: "Quick Exercise"),
-          );
+          Get.to(() => const ExerciseWizardScreen1(exerciseName: "Push-up"));
         },
         backgroundColor: kPrimaryColor,
         child: const Icon(Icons.fitness_center, color: Colors.white),

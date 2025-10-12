@@ -95,7 +95,7 @@ class _TrainingCategoriesSelectorState
   }
 
   void _initializeTrainingData() {
-    // Initialize with the provided JSON data
+    // Initialize with the provided JSON data. This json mimics the structure returned from the API
     List<Map<String, dynamic>> jsonData = [
       {
         "_id": "Foundational Training",

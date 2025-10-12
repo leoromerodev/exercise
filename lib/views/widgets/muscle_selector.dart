@@ -55,6 +55,9 @@ class _MuscleSelectorState extends State<MuscleSelector> {
   MuscleRole?
   selectedRole; // Nullable - no role selected when no muscle is active
 
+  // Track which muscle is selected in each tab (for single selection per tab)
+  Map<String, String?> selectedMusclePerTab = {};
+
   @override
   void initState() {
     super.initState();
@@ -63,42 +66,38 @@ class _MuscleSelectorState extends State<MuscleSelector> {
   }
 
   void _initializeMuscleData() {
-    // Initialize muscle categories based on the mockup
+    // Initialize muscle categories based on the mockup. ToDo: Fetch from API or database later
     muscleCategories = [
       MuscleCategory(
         id: 'Upper Body',
         muscles: [
-          MuscleGroup(name: 'Shoulders'),
+          MuscleGroup(name: 'Obliques'),
           MuscleGroup(name: 'Chest'),
           MuscleGroup(name: 'Biceps'),
           MuscleGroup(name: 'Triceps'),
-          MuscleGroup(name: 'Upper back'),
           MuscleGroup(name: 'Lats'),
           MuscleGroup(name: 'Traps'),
           MuscleGroup(name: 'Forearms'),
+          MuscleGroup(name: 'Abs'),
+          MuscleGroup(name: 'Shoulders'),
+          MuscleGroup(name: 'Mid traps'),
+          MuscleGroup(name: 'Lower back'),
         ],
       ),
       MuscleCategory(
         id: 'Lower Body',
         muscles: [
-          MuscleGroup(name: 'Quadriceps'),
-          MuscleGroup(name: 'Hamstrings'),
-          MuscleGroup(name: 'Glutes'),
-          MuscleGroup(name: 'Calves'),
-          MuscleGroup(name: 'Hip Flexors'),
-          MuscleGroup(name: 'Adductors'),
           MuscleGroup(name: 'Abductors'),
+          MuscleGroup(name: 'Calves'),
+          MuscleGroup(name: 'Glutes'),
+          MuscleGroup(name: 'Hamstrings'),
+          MuscleGroup(name: 'Quads'),
+          MuscleGroup(name: 'Adductors'),
         ],
       ),
       MuscleCategory(
         id: 'Full Body',
-        muscles: [
-          MuscleGroup(name: 'Core'),
-          MuscleGroup(name: 'Obliques'),
-          MuscleGroup(name: 'Lower back'),
-          MuscleGroup(name: 'Full Body'),
-          MuscleGroup(name: 'Stabilizers'),
-        ],
+        muscles: [MuscleGroup(name: 'Full body')],
       ),
     ];
 
@@ -117,26 +116,24 @@ class _MuscleSelectorState extends State<MuscleSelector> {
     'Chest': ['chest'],
     'Biceps': ['biceps'],
     'Triceps': ['triceps'],
-    'Upper back': ['mid-traps'],
+    'Mid traps': ['mid-traps'],
     'Lats': ['lats'],
     'Traps': ['traps'],
     'Forearms': ['forearms'],
 
     // Lower Body
-    'Quadriceps': ['front-tights', 'outer-tights'],
+    'Quads': ['quads'],
     'Hamstrings': ['hamstrings'],
     'Glutes': ['glutes'],
     'Calves': ['calves'],
-    'Hip Flexors': ['inner-tights'],
-    'Adductors': ['inner-tights'],
-    'Abductors': ['outer-tights'],
+    'Adductors': ['adductors'],
+    'Abductors': ['abductors'],
 
     // Full Body
-    'Core': ['abs'],
+    'Abs': ['abs'],
     'Obliques': ['obliques'],
     'Lower back': ['lower-back'],
     'Full Body': [], // No specific SVG mapping
-    'Stabilizers': [], // No specific SVG mapping
   };
 
   // Reverse mapping: SVG muscle ID -> chip name
@@ -298,11 +295,15 @@ class _MuscleSelectorState extends State<MuscleSelector> {
       (cat) => cat.id == selectedCategoryTab,
     );
 
+    // Get the selected muscle for the current tab
+    final selectedInCurrentTab = selectedMusclePerTab[selectedCategoryTab];
+
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: category.muscles.map((muscle) {
-        bool isSelected = selectedMuscles.contains(muscle.name);
+        // Only show as selected if it's the selected muscle in THIS tab
+        bool isSelected = selectedInCurrentTab == muscle.name;
 
         return _buildMuscleButton(
           muscle.name,
@@ -348,27 +349,28 @@ class _MuscleSelectorState extends State<MuscleSelector> {
     );
   }
 
-  // Select muscle (only adds, no toggle - removal only through X button)
+  // Select muscle - add to overall selection, track latest per tab
   void _selectMuscle(String muscle) {
     setState(() {
-      if (!selectedMuscles.contains(muscle)) {
-        selectedMuscles.add(muscle);
+      // Get the current tab
+      final currentTab = selectedCategoryTab;
+
+      if (selectedMuscles.contains(muscle)) {
+        // If muscle is already selected, show its current role in role selector
         lastSelectedMuscle = muscle;
-
-        // Use persistent role if muscle was previously assigned, otherwise default to Primary
-        final roleToAssign =
-            persistentMuscleRoles[muscle] ?? MuscleRole.primary;
-        muscleRoles[muscle] = roleToAssign;
-        persistentMuscleRoles[muscle] =
-            roleToAssign; // Store in persistent storage
-        selectedRole = roleToAssign; // Update selected role to show in UI
-
-        _notifySelectionChanged();
+        selectedRole = muscleRoles[muscle] ?? MuscleRole.primary;
       } else {
-        // If muscle is already selected, just make it the active one for role changes
+        // Add new muscle to overall selection with default primary role
+        selectedMuscles.add(muscle);
+        muscleRoles[muscle] = MuscleRole.primary;
+
+        // Set as active muscle in role selector with primary role selected
         lastSelectedMuscle = muscle;
-        selectedRole = muscleRoles[muscle];
+        selectedRole = MuscleRole.primary;
       }
+
+      // Update which muscle is the "active" one in this tab (for UI highlighting)
+      selectedMusclePerTab[currentTab] = muscle;
     });
   }
 
@@ -388,7 +390,15 @@ class _MuscleSelectorState extends State<MuscleSelector> {
   void _handleSvgMuscleSelection(String svgMuscleId) {
     final chipMuscle = svgToChipMapping[svgMuscleId];
     if (chipMuscle != null) {
+      // Find which tab this muscle belongs to
+      String? muscleTab = _findMuscleTab(chipMuscle);
+
       setState(() {
+        // Switch to the correct tab if needed
+        if (muscleTab != null && selectedCategoryTab != muscleTab) {
+          selectedCategoryTab = muscleTab;
+        }
+
         lastSelectedMuscle = chipMuscle;
         // Set default role if not already set
         if (!muscleRoles.containsKey(chipMuscle)) {
@@ -399,6 +409,18 @@ class _MuscleSelectorState extends State<MuscleSelector> {
       });
       _selectMuscle(chipMuscle);
     }
+  }
+
+  // Helper method to find which tab a muscle belongs to
+  String? _findMuscleTab(String muscleName) {
+    for (final category in muscleCategories) {
+      for (final muscle in category.muscles) {
+        if (muscle.name == muscleName) {
+          return category.id;
+        }
+      }
+    }
+    return null;
   }
 
   // Convert muscle roles to SVG muscle roles
@@ -524,7 +546,7 @@ class _MuscleSelectorState extends State<MuscleSelector> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: kSecondaryColor, // Use the role's color
+        color: role.color, // Use the role's color
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -555,6 +577,11 @@ class _MuscleSelectorState extends State<MuscleSelector> {
       persistentMuscleRoles.remove(
         muscle,
       ); // Reset role - will default to Primary when selected again
+
+      // Remove from per-tab selection tracking
+      selectedMusclePerTab.removeWhere(
+        (tab, selectedMuscle) => selectedMuscle == muscle,
+      );
 
       // If this was the last selected muscle, clear the role selection
       if (lastSelectedMuscle == muscle) {

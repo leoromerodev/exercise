@@ -31,7 +31,7 @@ class _VisualMuscleSelectorState extends State<VisualMuscleSelector> {
   List<MuscleModel> muscles = [];
   static const double _svgScale = 0.20;
   static const double _svgCenterX = 30.1;
-  static const double _svgCenterY = -10.0;
+  static const double _svgCenterY = 0.0;
 
   @override
   void initState() {
