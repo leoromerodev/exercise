@@ -9,8 +9,6 @@ import 'package:heavek/views/widgets/visual_muscle_selector.dart';
 import 'package:heavek/constants/muscle_roles.dart';
 import 'package:heavek/controllers/exercise_controller.dart';
 
-enum ExerciseDetailsMode { preview, edit, create }
-
 class ExerciseDetailsScreen extends StatefulWidget {
   final String? exerciseId;
   final String? exerciseName;
@@ -116,7 +114,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final exercise = exerciseController.currentExercise.value;
+        //TODO: Use this -> final exercise = exerciseController.currentExercise.value;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),

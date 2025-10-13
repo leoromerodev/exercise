@@ -11,7 +11,6 @@ class ExerciseMediaModel {
   }
 
   // toMap
-  @override
   Map<String, dynamic> toMap() {
     return {'gifImage': gifImage, 'video': video, 'thumbnail': thumbnail};
   }

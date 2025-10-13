@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
@@ -12,8 +13,7 @@ import 'exercise_wizard_screen_2.dart';
 class ExerciseWizardScreen1 extends StatefulWidget {
   final String exerciseName;
 
-  const ExerciseWizardScreen1({Key? key, required this.exerciseName})
-    : super(key: key);
+  const ExerciseWizardScreen1({Key? key, required this.exerciseName}) : super(key: key);
 
   @override
   State<ExerciseWizardScreen1> createState() => _ExerciseWizardScreen1State();
@@ -33,9 +33,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryColor.withValues(
-        alpha: 0.97,
-      ), // Light grey background
+      backgroundColor: kPrimaryColor.withValues(alpha: 0.97), // Light grey background
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         elevation: 4,
@@ -57,16 +55,10 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
-              icon: const Icon(
-                Icons.remove_red_eye_outlined,
-                color: kTextColorPrimary,
-              ),
+              icon: const Icon(Icons.remove_red_eye_outlined, color: kTextColorPrimary),
               onPressed: () {
                 Get.to(
-                  () => ExerciseDetailsScreen(
-                    exerciseName: widget.exerciseName,
-                    mode: ExerciseDetailsMode.preview,
-                  ),
+                  () => ExerciseDetailsScreen(exerciseName: widget.exerciseName, mode: ExerciseDetailsMode.preview),
                 );
               },
             ),
@@ -110,11 +102,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
                 ],
               ),
               child: Column(
@@ -129,8 +117,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                   ),
                   const SizedBox(height: 8),
                   MyText(
-                    text:
-                        'Share how it is done with a GIF, video, or YouTube link.',
+                    text: 'Share how it is done with a GIF, video, or YouTube link.',
                     size: 13,
                     weight: AppFontWeight.regular,
                     color: kTextColorSecondary,
@@ -150,18 +137,12 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(40.0),
-                      decoration: BoxDecoration(
-                        color: kMediaUploadBackgroundColor,
-                      ),
+                      decoration: BoxDecoration(color: kMediaUploadBackgroundColor),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Icon(
-                            Icons.perm_media,
-                            color: kTertiaryColor,
-                            size: 30,
-                          ),
+                          const Icon(Icons.perm_media, color: kTertiaryColor, size: 30),
                           const SizedBox(height: 16),
                           MyText(
                             text: 'Upload an image or video',
@@ -206,10 +187,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                     controller: youtubeController,
                     decoration: InputDecoration(
                       hintText: 'YouTube link',
-                      hintStyle: TextStyle(
-                        color: kTextInputHintColor,
-                        fontSize: 16,
-                      ),
+                      hintStyle: TextStyle(color: kTextInputHintColor, fontSize: 16),
                       filled: true,
                       fillColor: kTextInputBackgroundColor,
                       border: OutlineInputBorder(
@@ -224,10 +202,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(color: kPrimaryColor),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -244,22 +219,14 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
                           });
                         },
                         activeColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        side: BorderSide(
-                          color: hasConfirmedRights
-                              ? kSecondaryColor
-                              : kChipBorderColor,
-                          width: 1.5,
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        side: BorderSide(color: hasConfirmedRights ? kSecondaryColor : kChipBorderColor, width: 1.5),
                       ),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 12),
                           child: MyText(
-                            text:
-                                'Confirm I own or have rights to use and share this media in the app',
+                            text: 'Confirm I own or have rights to use and share this media in the app',
                             size: 13,
                             weight: AppFontWeight.regular,
                             color: kTextColorSecondary,
@@ -292,24 +259,15 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
               children: [
                 Center(
                   child: SizedBox(
-                    width:
-                        MediaQuery.of(context).size.width *
-                        0.8, // 80% of screen width,
+                    width: MediaQuery.of(context).size.width * 0.8, // 80% of screen width,
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () => _onContinue(), // Always clickable
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: MyText(
-                        text: 'Continue',
-                        size: 16,
-                        weight: FontWeight.w600,
-                        color: kPrimaryColor,
-                      ),
+                      child: MyText(text: 'Continue', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                     ),
                   ),
                 ),
@@ -339,9 +297,7 @@ class _ExerciseWizardScreen1State extends State<ExerciseWizardScreen1> {
   Widget _buildDashedDivider() {
     return Container(
       height: 1,
-      child: CustomPaint(
-        painter: DashedLinePainter(color: Colors.black.withValues(alpha: 0.24)),
-      ),
+      child: CustomPaint(painter: DashedLinePainter(color: Colors.black.withValues(alpha: 0.24))),
     );
   }
 
@@ -356,11 +312,7 @@ class DashedLinePainter extends CustomPainter {
   final double dashWidth;
   final double dashSpace;
 
-  DashedLinePainter({
-    required this.color,
-    this.dashWidth = 5.0,
-    this.dashSpace = 3.0,
-  });
+  DashedLinePainter({required this.color, this.dashWidth = 5.0, this.dashSpace = 3.0});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -370,11 +322,7 @@ class DashedLinePainter extends CustomPainter {
 
     double startX = 0;
     while (startX < size.width) {
-      canvas.drawLine(
-        Offset(startX, size.height / 2),
-        Offset(startX + dashWidth, size.height / 2),
-        paint,
-      );
+      canvas.drawLine(Offset(startX, size.height / 2), Offset(startX + dashWidth, size.height / 2), paint);
       startX += dashWidth + dashSpace;
     }
   }
@@ -408,12 +356,7 @@ class DashedBorderPainter extends CustomPainter {
     final path = Path()
       ..addRRect(
         RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            strokeWidth / 2,
-            strokeWidth / 2,
-            size.width - strokeWidth,
-            size.height - strokeWidth,
-          ),
+          Rect.fromLTWH(strokeWidth / 2, strokeWidth / 2, size.width - strokeWidth, size.height - strokeWidth),
           Radius.circular(borderRadius),
         ),
       );

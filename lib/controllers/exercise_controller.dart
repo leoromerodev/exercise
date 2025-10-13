@@ -5,6 +5,8 @@ import 'package:heavek/models/workout/exercise_model.dart';
 import 'package:heavek/services/workout/exercise_service.dart';
 import 'package:heavek/services/workout/resource_service.dart';
 
+enum ExerciseDetailsMode { preview, edit, create }
+
 class ExerciseController extends GetxController {
   final RxList<ExerciseModelOld> allExercises = <ExerciseModelOld>[].obs;
   final RxList<ExerciseModelOld> filteredExercises = <ExerciseModelOld>[].obs;

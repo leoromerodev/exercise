@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
@@ -14,11 +15,7 @@ class ExerciseWizardScreen2 extends StatefulWidget {
   final String exerciseName;
   final Map<String, dynamic>? previousData;
 
-  const ExerciseWizardScreen2({
-    Key? key,
-    required this.exerciseName,
-    this.previousData,
-  }) : super(key: key);
+  const ExerciseWizardScreen2({Key? key, required this.exerciseName, this.previousData}) : super(key: key);
 
   @override
   State<ExerciseWizardScreen2> createState() => _ExerciseWizardScreen2State();
@@ -36,10 +33,7 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
   bool isWarmUpFriendly = false;
   bool isCoolDownFriendly = false;
 
-  void _onSelectionChanged(
-    Map<String, Set<String>> trainings,
-    Map<String, Set<String>> techniques,
-  ) {
+  void _onSelectionChanged(Map<String, Set<String>> trainings, Map<String, Set<String>> techniques) {
     setState(() {
       selectedTrainings = trainings;
       selectedTechniques = techniques;
@@ -77,16 +71,10 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
-              icon: const Icon(
-                Icons.remove_red_eye_outlined,
-                color: kTextColorPrimary,
-              ),
+              icon: const Icon(Icons.remove_red_eye_outlined, color: kTextColorPrimary),
               onPressed: () {
                 Get.to(
-                  () => ExerciseDetailsScreen(
-                    exerciseName: widget.exerciseName,
-                    mode: ExerciseDetailsMode.preview,
-                  ),
+                  () => ExerciseDetailsScreen(exerciseName: widget.exerciseName, mode: ExerciseDetailsMode.preview),
                 );
               },
             ),
@@ -154,16 +142,9 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
                       onPressed: () => _onContinue(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: MyText(
-                        text: 'Continue',
-                        size: 16,
-                        weight: FontWeight.w600,
-                        color: kPrimaryColor,
-                      ),
+                      child: MyText(text: 'Continue', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                     ),
                   ),
                 ),
@@ -198,13 +179,7 @@ class _ExerciseWizardScreen2State extends State<ExerciseWizardScreen2> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,11 +306,7 @@ class _CustomShadowSwitch extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: value ? activeColor : inactiveColor,
                   boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4, offset: const Offset(0, 2)),
                   ],
                 ),
               ),

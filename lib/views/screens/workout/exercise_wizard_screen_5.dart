@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
@@ -12,11 +13,7 @@ class ExerciseWizardScreen5 extends StatefulWidget {
   final String exerciseName;
   final Map<String, dynamic>? previousData;
 
-  const ExerciseWizardScreen5({
-    Key? key,
-    required this.exerciseName,
-    this.previousData,
-  }) : super(key: key);
+  const ExerciseWizardScreen5({Key? key, required this.exerciseName, this.previousData}) : super(key: key);
 
   @override
   State<ExerciseWizardScreen5> createState() => _ExerciseWizardScreen5State();
@@ -48,16 +45,10 @@ class _ExerciseWizardScreen5State extends State<ExerciseWizardScreen5> {
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
-              icon: const Icon(
-                Icons.remove_red_eye_outlined,
-                color: kTextColorPrimary,
-              ),
+              icon: const Icon(Icons.remove_red_eye_outlined, color: kTextColorPrimary),
               onPressed: () {
                 Get.to(
-                  () => ExerciseDetailsScreen(
-                    exerciseName: widget.exerciseName,
-                    mode: ExerciseDetailsMode.preview,
-                  ),
+                  () => ExerciseDetailsScreen(exerciseName: widget.exerciseName, mode: ExerciseDetailsMode.preview),
                 );
               },
             ),
@@ -101,11 +92,7 @@ class _ExerciseWizardScreen5State extends State<ExerciseWizardScreen5> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
                 ],
               ),
               child: Column(
@@ -141,11 +128,7 @@ class _ExerciseWizardScreen5State extends State<ExerciseWizardScreen5> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.check_circle_outline,
-                            size: 48,
-                            color: Colors.grey[400],
-                          ),
+                          Icon(Icons.check_circle_outline, size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 12),
                           MyText(
                             text: 'Review & Finalize',
@@ -180,16 +163,9 @@ class _ExerciseWizardScreen5State extends State<ExerciseWizardScreen5> {
                       onPressed: () => _onFinish(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: MyText(
-                        text: 'Continue',
-                        size: 16,
-                        weight: FontWeight.w600,
-                        color: kPrimaryColor,
-                      ),
+                      child: MyText(text: 'Continue', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                     ),
                   ),
                 ),
