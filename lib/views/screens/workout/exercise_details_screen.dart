@@ -7,6 +7,7 @@ import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
 import 'package:heavek/views/widgets/visual_muscle_selector.dart';
 import 'package:heavek/constants/muscle_roles.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 enum ExerciseDetailsMode { preview, edit, create }
 
@@ -35,6 +36,9 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
 
   final List<String> tabTitles = ['Muscles', 'Equipment', 'Instructions', 'Targets'];
 
+  // Controller
+  late final ExerciseController exerciseController;
+
   // Mock muscle data for the exercise
   final Set<String> selectedMuscles = {'chest', 'shoulders', 'triceps'};
   final Map<String, MuscleRole> muscleRoles = {
@@ -45,6 +49,17 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
 
   // Equipment data
   final List<String> equipmentList = ['Treadmill', 'Ball', 'Dumbbells', 'Bands'];
+
+  @override
+  void initState() {
+    super.initState();
+    exerciseController = Get.find<ExerciseController>();
+
+    // Load exercise details if exerciseId is provided
+    if (widget.exerciseId != null) {
+      exerciseController.loadExercise(widget.exerciseId!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,77 +111,85 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
               )
             : null,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Creator info
-            Center(
-              child: MyText(
-                text: 'By @alex_fit',
-                size: 12,
-                weight: AppFontWeight.regular,
-                color: kTextColorSecondary,
-                fontFamily: AppFonts.openSans,
+      body: Obx(() {
+        if (exerciseController.isLoadingExercise.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final exercise = exerciseController.currentExercise.value;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20.0, 5.0, 20.0, 10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Creator info
+              Center(
+                child: MyText(
+                  text: 'By @alex_fit',
+                  size: 12,
+                  weight: AppFontWeight.regular,
+                  color: kTextColorSecondary,
+                  fontFamily: AppFonts.openSans,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
+              const SizedBox(height: 6),
 
-            // Exercise Image with overlay buttons
-            _buildExerciseImage(),
-            const SizedBox(height: 20),
+              // Exercise Image with overlay buttons
+              _buildExerciseImage(),
+              const SizedBox(height: 20),
 
-            // Details Section
-            _buildDetailsSection(),
-            const SizedBox(height: 20),
+              // Details Section
+              _buildDetailsSection(),
+              const SizedBox(height: 20),
 
-            // Community Feedback
-            _buildCommunityFeedback(),
-            const SizedBox(height: 20),
+              // Community Feedback
+              _buildCommunityFeedback(),
+              const SizedBox(height: 20),
 
-            // Tabbed Content
-            _buildTabbedContent(),
-            const SizedBox(height: 30.0),
+              // Tabbed Content
+              _buildTabbedContent(),
+              const SizedBox(height: 30.0),
 
-            // Action Buttons (only show in edit mode)
-            if (widget.mode == ExerciseDetailsMode.edit)
-              Column(
-                children: [
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => _onPublishExercise(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: kSecondaryColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        ),
-                        child: MyText(text: 'Publish', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: MyBorderButton(
-                        buttonText: 'Cancel',
-                        onTap: () => Get.back(),
-                        borderColor: kSecondaryColor,
-                        textColor: kSecondaryColor,
-                        radius: 15,
+              // Action Buttons (only show in edit mode)
+              if (widget.mode == ExerciseDetailsMode.edit)
+                Column(
+                  children: [
+                    Center(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
                         height: 56,
+                        child: ElevatedButton(
+                          onPressed: () => _onPublishExercise(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: kSecondaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                          ),
+                          child: MyText(text: 'Publish', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            const SizedBox(height: 50),
-          ],
-        ),
-      ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: MyBorderButton(
+                          buttonText: 'Cancel',
+                          onTap: () => Get.back(),
+                          borderColor: kSecondaryColor,
+                          textColor: kSecondaryColor,
+                          radius: 15,
+                          height: 56,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(height: 50),
+            ],
+          ),
+        );
+      }),
     );
   }
 

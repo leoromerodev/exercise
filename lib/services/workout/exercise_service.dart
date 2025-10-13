@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:heavek/constants/endpoints.dart';
-import 'package:heavek/models/exercise/exercise_model.dart';
+import 'package:heavek/models/workout/exercise_model.dart';
+import 'package:heavek/models/workout/exercise_model_old.dart';
 import 'package:heavek/services/api_service/api_service.dart';
 
 class ExerciseService {
@@ -23,12 +24,12 @@ class ExerciseService {
   static const String _exercisesEndpoint = workoutLink;
 
   // Simple cache for exercises
-  List<ExerciseModel>? _cachedExercises;
+  List<ExerciseModelOld>? _cachedExercises;
   DateTime? _cacheTime;
   static const Duration _cacheDuration = Duration(hours: 2);
 
   /// Gets exercises from the API or from cache
-  Future<List<ExerciseModel>> getAllExercises() async {
+  Future<List<ExerciseModelOld>> getAllExercises() async {
     // Check if we have a valid cache
     if (_cachedExercises != null && _cacheTime != null && DateTime.now().difference(_cacheTime!) < _cacheDuration) {
       final total = _cachedExercises!.length;
@@ -52,7 +53,7 @@ class ExerciseService {
         final List<dynamic> jsonData = response['data'] ?? [];
 
         // Parse exercises
-        final exercises = jsonData.map((json) => ExerciseModel.fromJson(json)).toList();
+        final exercises = jsonData.map((json) => ExerciseModelOld.fromJson(json)).toList();
 
         // Save to cache
         _cachedExercises = exercises;
@@ -74,10 +75,39 @@ class ExerciseService {
     }
   }
 
+  /// Get a specific exercise by ID
+  Future<ExerciseModel?> getExercise(String id) async {
+    try {
+      log('Fetching exercise with ID: $id');
+      final (response, statusCode) = await _apiService.get(
+        '$_exercisesEndpoint/$id',
+        false, // not basic, requires auth token
+        isAuth: true,
+        successCode: 200,
+        showResult: true,
+      );
+
+      if (response != null && statusCode == 200) {
+        final exerciseData = response['data'];
+        if (exerciseData != null) {
+          final exercise = ExerciseModel.fromMap(exerciseData);
+          log('Exercise fetched successfully: ${exercise.name}');
+          return exercise;
+        }
+      }
+
+      log('Exercise not found or failed to load, status code: $statusCode');
+      return null;
+    } catch (e) {
+      log('Error in getExercise: $e');
+      return null;
+    }
+  }
+
   /// Mock data for development/testing
-  List<ExerciseModel> _getMockExercises() {
+  List<ExerciseModelOld> _getMockExercises() {
     return [
-      ExerciseModel(
+      ExerciseModelOld(
         id: '1',
         name: 'Squats',
         imageUrl: null, // Usará placeholder
@@ -85,7 +115,7 @@ class ExerciseService {
         skillLevels: ['Beginner', 'Intermediate'],
         equipment: [],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '2',
         name: 'Push-ups',
         imageUrl: null,
@@ -93,7 +123,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: [],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '3',
         name: 'Lunges',
         imageUrl: null,
@@ -101,7 +131,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Dumbbells'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '4',
         name: 'Deadlifts',
         imageUrl: null,
@@ -109,7 +139,7 @@ class ExerciseService {
         skillLevels: ['Advanced'],
         equipment: ['Barbell', 'Plates'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '5',
         name: 'Bench Press',
         imageUrl: null,
@@ -117,7 +147,7 @@ class ExerciseService {
         skillLevels: ['Intermediate', 'Advanced'],
         equipment: ['Barbell', 'Bench', 'Plates'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '6',
         name: 'Pull-ups',
         imageUrl: null,
@@ -125,7 +155,7 @@ class ExerciseService {
         skillLevels: ['Intermediate', 'Advanced'],
         equipment: ['Pull-up Bar'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '7',
         name: 'Plank',
         imageUrl: null,
@@ -133,7 +163,7 @@ class ExerciseService {
         skillLevels: ['Beginner', 'Intermediate'],
         equipment: [],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '8',
         name: 'Bicep Curls',
         imageUrl: null,
@@ -141,7 +171,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: ['Dumbbells'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '9',
         name: 'Overhead Press',
         imageUrl: null,
@@ -149,7 +179,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Barbell', 'Dumbbells'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '10',
         name: 'Rows',
         imageUrl: null,
@@ -157,7 +187,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Barbell', 'Dumbbells'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '11',
         name: 'Calf Raises',
         imageUrl: null,
@@ -165,7 +195,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: [],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '12',
         name: 'Leg Press',
         imageUrl: null,
@@ -173,7 +203,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Leg Press Machine'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '13',
         name: 'Crunches',
         imageUrl: null,
@@ -181,7 +211,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: [],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '14',
         name: 'Russian Twists',
         imageUrl: null,
@@ -189,7 +219,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Medicine Ball'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '15',
         name: 'Dips',
         imageUrl: null,
@@ -197,7 +227,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Parallel Bars'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '16',
         name: 'Hip Thrusts',
         imageUrl: null,
@@ -205,7 +235,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Barbell', 'Bench'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '17',
         name: 'Lateral Raises',
         imageUrl: null,
@@ -213,7 +243,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: ['Dumbbells'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '18',
         name: 'Face Pulls',
         imageUrl: null,
@@ -221,7 +251,7 @@ class ExerciseService {
         skillLevels: ['Intermediate'],
         equipment: ['Cable Machine'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '19',
         name: 'Leg Curls',
         imageUrl: null,
@@ -229,7 +259,7 @@ class ExerciseService {
         skillLevels: ['Beginner'],
         equipment: ['Leg Curl Machine'],
       ),
-      ExerciseModel(
+      ExerciseModelOld(
         id: '20',
         name: 'Leg Extensions',
         imageUrl: null,

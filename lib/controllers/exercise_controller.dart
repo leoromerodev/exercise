@@ -1,13 +1,16 @@
 import 'dart:developer';
 import 'package:get/get.dart';
-import 'package:heavek/models/exercise/exercise_model.dart';
+import 'package:heavek/models/workout/exercise_model_old.dart';
+import 'package:heavek/models/workout/exercise_model.dart';
 import 'package:heavek/services/workout/exercise_service.dart';
 import 'package:heavek/services/workout/resource_service.dart';
 
 class ExerciseController extends GetxController {
-  final RxList<ExerciseModel> allExercises = <ExerciseModel>[].obs;
-  final RxList<ExerciseModel> filteredExercises = <ExerciseModel>[].obs;
+  final RxList<ExerciseModelOld> allExercises = <ExerciseModelOld>[].obs;
+  final RxList<ExerciseModelOld> filteredExercises = <ExerciseModelOld>[].obs;
   final RxBool isLoadingExercises = false.obs;
+  final RxBool isLoadingExercise = false.obs;
+  final Rx<ExerciseModel?> currentExercise = Rx<ExerciseModel?>(null);
   final RxSet<String> selectedExerciseIds = <String>{}.obs;
   final RxBool isSelectionMode = false.obs;
   final RxInt currentNavIndex = 1.obs;
@@ -61,7 +64,7 @@ class ExerciseController extends GetxController {
       filteredExercises.value = exercises; // Inicialmente, todos los ejercicios
       log('Loaded ${exercises.length} exercises');
 
-      final muscles = await _resourceService.getAllMuscles();
+      final muscles = await _resourceService.getAllMuscles(); // TODO: Remove this as it is for testing
       log('Loaded ${muscles.length} muscles');
     } catch (e) {
       log('Error loading exercises: $e');
@@ -72,7 +75,7 @@ class ExerciseController extends GetxController {
 
   /// Aplica todos los filtros activos
   void _applyFilters() {
-    List<ExerciseModel> filtered = allExercises.toList();
+    List<ExerciseModelOld> filtered = allExercises.toList();
 
     // Filtro por búsqueda de texto (solo si tiene 3 o más caracteres)
     if (searchQuery.value.length >= 3) {
@@ -245,6 +248,21 @@ class ExerciseController extends GetxController {
     if (index != currentNavIndex.value) {
       clearSelection();
       log('Navigating to index: $index');
+    }
+  }
+
+  /// Loads a specific exercise by ID
+  Future<void> loadExercise(String id) async {
+    try {
+      isLoadingExercise.value = true;
+      final exercise = await _exerciseService.getExercise(id);
+      currentExercise.value = exercise;
+      log('Loaded exercise: ${exercise?.name ?? 'Not found'}');
+    } catch (e) {
+      log('Error loading exercise: $e');
+      currentExercise.value = null;
+    } finally {
+      isLoadingExercise.value = false;
     }
   }
 

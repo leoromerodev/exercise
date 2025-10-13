@@ -395,7 +395,9 @@ class _FavoriteCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: GestureDetector(
               onTap: () {
-                Get.to(() => ExerciseDetailsScreen(exerciseName: title));
+                Get.to(
+                  () => ExerciseDetailsScreen(exerciseId: "685c63a261dfaf750b38c5df", exerciseName: title),
+                ); // TODO: Remove this as it is for testing
               },
               child: Image.asset(imagePath, height: 120, width: double.infinity, fit: BoxFit.cover),
             ),
