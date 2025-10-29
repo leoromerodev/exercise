@@ -1,8 +1,48 @@
 import 'dart:developer';
 import 'package:heavek/constants/endpoints.dart';
 import 'package:heavek/models/workout/exercise_model.dart';
-import 'package:heavek/models/workout/exercise_model_old.dart';
 import 'package:heavek/services/api_service/api_service.dart';
+
+/// OData query parameters for exercise filtering and pagination
+class ExerciseQueryParams {
+  final String? filter;
+  final int? top;
+  final String? orderBy;
+  final String? skipToken;
+
+  const ExerciseQueryParams({this.filter, this.top, this.orderBy, this.skipToken});
+
+  /// Creates a copy with updated parameters
+  ExerciseQueryParams copyWith({String? filter, int? top, String? orderBy, String? skipToken}) {
+    return ExerciseQueryParams(
+      filter: filter ?? this.filter,
+      top: top ?? this.top,
+      orderBy: orderBy ?? this.orderBy,
+      skipToken: skipToken ?? this.skipToken,
+    );
+  }
+
+  /// Checks if any parameters are set
+  bool get hasParameters =>
+      filter?.isNotEmpty == true || top != null || orderBy?.isNotEmpty == true || skipToken?.isNotEmpty == true;
+}
+
+/// OData response wrapper for exercises
+class ExerciseODataResponse {
+  final List<ExerciseModel> exercises;
+  final int totalCount;
+  final String? nextLink;
+  final String? skipToken;
+
+  ExerciseODataResponse({required this.exercises, required this.totalCount, this.nextLink, this.skipToken});
+
+  /// Extracts skip token from nextLink URL
+  String? get nextSkipToken {
+    if (nextLink == null) return null;
+    final uri = Uri.parse(nextLink!);
+    return uri.queryParameters['\$skiptoken'];
+  }
+}
 
 class ExerciseService {
   // Private constructor
@@ -23,55 +63,81 @@ class ExerciseService {
   // Endpoint for exercises
   static const String _exercisesEndpoint = workoutLink;
 
-  // Simple cache for exercises
-  List<ExerciseModelOld>? _cachedExercises;
-  DateTime? _cacheTime;
-  static const Duration _cacheDuration = Duration(hours: 2);
+  /// Builds OData query URL with parameters
+  String _buildODataUrl(String baseUrl, ExerciseQueryParams params) {
+    final uri = Uri.parse(baseUrl);
+    final queryParams = <String, String>{};
 
-  /// Gets exercises from the API or from cache
-  Future<List<ExerciseModelOld>> getAllExercises() async {
-    // Check if we have a valid cache
-    if (_cachedExercises != null && _cacheTime != null && DateTime.now().difference(_cacheTime!) < _cacheDuration) {
-      final total = _cachedExercises!.length;
-      final taken = _cachedExercises!.take(20).length;
-      log('Returning exercises from cache. Cached total: $total, returning: $taken');
-      // Devuelve solo los primeros 20 del caché
-      return _cachedExercises!.take(20).toList();
+    if (params.filter?.isNotEmpty == true) {
+      queryParams['\$filter'] = params.filter!;
+    }
+    if (params.top != null) {
+      queryParams['\$top'] = params.top.toString();
+    }
+    if (params.orderBy?.isNotEmpty == true) {
+      queryParams['\$orderby'] = params.orderBy!;
+    }
+    if (params.skipToken?.isNotEmpty == true) {
+      queryParams['\$skiptoken'] = params.skipToken!;
     }
 
+    return uri.replace(queryParameters: queryParams).toString();
+  }
+
+  /// Gets exercises from the API with full OData response
+  Future<ExerciseODataResponse> getExercisesOData({ExerciseQueryParams? queryParams}) async {
+    // Check if we have a valid cache
+
     try {
-      log('Fetching exercises from API...');
+      // Build URL with OData parameters if provided
+      final url = queryParams?.hasParameters == true
+          ? _buildODataUrl(_exercisesEndpoint, queryParams!)
+          : _exercisesEndpoint;
+
+      log('Fetching exercises from API with URL: $url');
       final (response, statusCode) = await _apiService.get(
-        _exercisesEndpoint,
+        url,
         false, // not basic, requires auth token
         isAuth: true,
         successCode: 200,
         showResult: true,
       );
 
+      // OData response structure logging
+      if (response != null && response['data'] != null) {
+        final dataMap = response['data'] as Map<String, dynamic>;
+        log('OData count: ${dataMap['@odata.count']}');
+        log('OData nextLink: ${dataMap['@odata.nextLink']}');
+      }
+
       if (response != null && statusCode == 200) {
-        final List<dynamic> jsonData = response['data'] ?? [];
+        // Handle OData response structure
+        final data = response['data'] as Map<String, dynamic>;
+        final List<dynamic> jsonData = data['value'] as List<dynamic>? ?? [];
 
         // Parse exercises
-        final exercises = jsonData.map((json) => ExerciseModelOld.fromJson(json)).toList();
+        final exercises = jsonData.map((json) => ExerciseModel.fromMap(json)).toList();
 
-        // Save to cache
-        _cachedExercises = exercises;
-        _cacheTime = DateTime.now();
-        log('Exercises fetched and cached successfully. API total: ${exercises.length}. Returning first 20.');
+        log('Successfully parsed ${exercises.length} exercises from API');
+        log('Total available exercises: ${data['@odata.count']}');
+        if (data['@odata.nextLink'] != null) {
+          log('Next page available: ${data['@odata.nextLink']}');
+        }
 
-        // Devuelve solo los primeros 20 de la respuesta de la API
-        return exercises.take(20).toList();
+        return ExerciseODataResponse(
+          exercises: exercises,
+          totalCount: data['@odata.count'] ?? 0,
+          nextLink: data['@odata.nextLink'],
+        );
       } else {
         final mock = _getMockExercises();
         log('Failed to load exercises, status code: $statusCode. Returning mock data (${mock.length}).');
-        return mock; // Return mock data on failure
+        return ExerciseODataResponse(exercises: mock, totalCount: mock.length);
       }
     } catch (e) {
       final mock = _getMockExercises();
-      log('Error in getAllExercises: $e. Returning mock data (${mock.length}).');
-      // In case of any exception, return mock data
-      return mock;
+      log('Error in getExercisesOData: $e. Returning mock data (${mock.length}).');
+      return ExerciseODataResponse(exercises: mock, totalCount: mock.length);
     }
   }
 
@@ -105,168 +171,28 @@ class ExerciseService {
   }
 
   /// Mock data for development/testing
-  List<ExerciseModelOld> _getMockExercises() {
+  List<ExerciseModel> _getMockExercises() {
     return [
-      ExerciseModelOld(
-        id: '1',
-        name: 'Squats',
-        imageUrl: null, // Usará placeholder
-        targetMuscles: ['Legs', 'Glutes', 'Core'],
-        skillLevels: ['Beginner', 'Intermediate'],
-        equipment: [],
-      ),
-      ExerciseModelOld(
-        id: '2',
-        name: 'Push-ups',
-        imageUrl: null,
-        targetMuscles: ['Chest', 'Arms', 'Shoulders'],
-        skillLevels: ['Beginner'],
-        equipment: [],
-      ),
-      ExerciseModelOld(
-        id: '3',
-        name: 'Lunges',
-        imageUrl: null,
-        targetMuscles: ['Legs', 'Glutes'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Dumbbells'],
-      ),
-      ExerciseModelOld(
-        id: '4',
-        name: 'Deadlifts',
-        imageUrl: null,
-        targetMuscles: ['Back', 'Legs', 'Core', 'Arms'],
-        skillLevels: ['Advanced'],
-        equipment: ['Barbell', 'Plates'],
-      ),
-      ExerciseModelOld(
-        id: '5',
-        name: 'Bench Press',
-        imageUrl: null,
-        targetMuscles: ['Chest', 'Arms'],
-        skillLevels: ['Intermediate', 'Advanced'],
-        equipment: ['Barbell', 'Bench', 'Plates'],
-      ),
-      ExerciseModelOld(
-        id: '6',
-        name: 'Pull-ups',
-        imageUrl: null,
-        targetMuscles: ['Back', 'Arms'],
-        skillLevels: ['Intermediate', 'Advanced'],
-        equipment: ['Pull-up Bar'],
-      ),
-      ExerciseModelOld(
-        id: '7',
-        name: 'Plank',
-        imageUrl: null,
-        targetMuscles: ['Core'],
-        skillLevels: ['Beginner', 'Intermediate'],
-        equipment: [],
-      ),
-      ExerciseModelOld(
-        id: '8',
-        name: 'Bicep Curls',
-        imageUrl: null,
-        targetMuscles: ['Arms'],
-        skillLevels: ['Beginner'],
-        equipment: ['Dumbbells'],
-      ),
-      ExerciseModelOld(
-        id: '9',
-        name: 'Overhead Press',
-        imageUrl: null,
-        targetMuscles: ['Shoulders', 'Arms'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Barbell', 'Dumbbells'],
-      ),
-      ExerciseModelOld(
-        id: '10',
-        name: 'Rows',
-        imageUrl: null,
-        targetMuscles: ['Back', 'Arms'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Barbell', 'Dumbbells'],
-      ),
-      ExerciseModelOld(
-        id: '11',
-        name: 'Calf Raises',
-        imageUrl: null,
-        targetMuscles: ['Legs'],
-        skillLevels: ['Beginner'],
-        equipment: [],
-      ),
-      ExerciseModelOld(
-        id: '12',
-        name: 'Leg Press',
-        imageUrl: null,
-        targetMuscles: ['Legs', 'Glutes'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Leg Press Machine'],
-      ),
-      ExerciseModelOld(
-        id: '13',
-        name: 'Crunches',
-        imageUrl: null,
-        targetMuscles: ['Core'],
-        skillLevels: ['Beginner'],
-        equipment: [],
-      ),
-      ExerciseModelOld(
-        id: '14',
-        name: 'Russian Twists',
-        imageUrl: null,
-        targetMuscles: ['Core'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Medicine Ball'],
-      ),
-      ExerciseModelOld(
-        id: '15',
-        name: 'Dips',
-        imageUrl: null,
-        targetMuscles: ['Arms', 'Chest'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Parallel Bars'],
-      ),
-      ExerciseModelOld(
-        id: '16',
-        name: 'Hip Thrusts',
-        imageUrl: null,
-        targetMuscles: ['Glutes', 'Legs'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Barbell', 'Bench'],
-      ),
-      ExerciseModelOld(
-        id: '17',
-        name: 'Lateral Raises',
-        imageUrl: null,
-        targetMuscles: ['Shoulders'],
-        skillLevels: ['Beginner'],
-        equipment: ['Dumbbells'],
-      ),
-      ExerciseModelOld(
-        id: '18',
-        name: 'Face Pulls',
-        imageUrl: null,
-        targetMuscles: ['Shoulders', 'Back'],
-        skillLevels: ['Intermediate'],
-        equipment: ['Cable Machine'],
-      ),
-      ExerciseModelOld(
-        id: '19',
-        name: 'Leg Curls',
-        imageUrl: null,
-        targetMuscles: ['Legs'],
-        skillLevels: ['Beginner'],
-        equipment: ['Leg Curl Machine'],
-      ),
-      ExerciseModelOld(
-        id: '20',
-        name: 'Leg Extensions',
-        imageUrl: null,
-        targetMuscles: ['Legs'],
-        skillLevels: ['Beginner'],
-        equipment: ['Leg Extension Machine'],
-      ),
+      ExerciseModel(id: '1', name: 'Squats'),
+      ExerciseModel(id: '2', name: 'Push-ups'),
+      ExerciseModel(id: '3', name: 'Lunges'),
+      ExerciseModel(id: '4', name: 'Deadlifts'),
+      ExerciseModel(id: '5', name: 'Bench Press'),
+      ExerciseModel(id: '6', name: 'Pull-ups'),
+      ExerciseModel(id: '7', name: 'Plank'),
+      ExerciseModel(id: '8', name: 'Bicep Curls'),
+      ExerciseModel(id: '9', name: 'Overhead Press'),
+      ExerciseModel(id: '10', name: 'Rows'),
+      ExerciseModel(id: '11', name: 'Calf Raises'),
+      ExerciseModel(id: '12', name: 'Leg Press'),
+      ExerciseModel(id: '13', name: 'Crunches'),
+      ExerciseModel(id: '14', name: 'Russian Twists'),
+      ExerciseModel(id: '15', name: 'Dips'),
+      ExerciseModel(id: '16', name: 'Hip Thrusts'),
+      ExerciseModel(id: '17', name: 'Lateral Raises'),
+      ExerciseModel(id: '18', name: 'Face Pulls'),
+      ExerciseModel(id: '19', name: 'Leg Curls'),
+      ExerciseModel(id: '20', name: 'Leg Extensions'),
     ];
   }
 }

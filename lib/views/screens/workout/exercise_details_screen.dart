@@ -55,7 +55,7 @@ class _ExerciseDetailsScreenState extends State<ExerciseDetailsScreen> {
 
     // Load exercise details if exerciseId is provided
     if (widget.exerciseId != null) {
-      exerciseController.loadExercise(widget.exerciseId!);
+      exerciseController.getExercise(widget.exerciseId!);
     }
   }
 

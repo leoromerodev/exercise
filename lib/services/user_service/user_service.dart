@@ -320,10 +320,10 @@ class UserService implements AuthRefreshService {
   }
 
   /// Complete user profile (requires authentication)
-  Future<UserModel?> completeUserProfile({required UserModel user}) async {
+  Future<UserModel?> completeUserProfile({required String email, required UserModel user}) async {
     try {
       final response = await _apiService.postWithResponse(
-        '$accountsLink/${user.email}/profile',
+        '$accountsLink/$email/profile',
         user.toMap(),
         false, // requires auth token
         isAuth: true,

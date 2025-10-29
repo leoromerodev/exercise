@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
 import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
-import 'package:heavek/views/widgets/common_image_view.dart';
 import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
@@ -23,6 +23,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
+
+  bool _isPasswordVisible = false;
+  bool _isRetypedPasswordVisible = false;
 
   @override
   void initState() {
@@ -48,7 +51,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           padding: AppSizes.defaultPadding,
           child: Column(
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 120),
               Center(
                 child: MyText(text: 'Enter New Password', weight: FontWeight.w700, size: 20),
               ),
@@ -56,17 +59,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               MyTextfield(
                 controller: authController.passwordController,
                 focusNode: _passwordFocusNode,
+                isObSecure: !_isPasswordVisible,
                 hint: 'Password',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
-                  child: CommonImageView(
-                    imagePath: Assets.imagesPasswordIcon,
+                  child: SvgPicture.asset(
+                    Assets.passwordIcon,
                     height: 20,
                     width: 20,
-                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(kTextColorSecondary, BlendMode.srcIn),
                   ),
                 ),
-                suffix: Icon(Icons.visibility_off_outlined, color: Color(0xff7A8094), size: 18),
+                suffix: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  child: Icon(
+                    _isPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    color: Color(0xff7A8094),
+                    size: 18,
+                  ),
+                ),
                 validator: (value) => validationService.validatePassword(value),
               ),
               const SizedBox(height: 10),
@@ -79,17 +94,29 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ),
               MyTextfield(
                 controller: authController.confirmPasswordController,
+                isObSecure: !_isRetypedPasswordVisible,
                 hint: 'Re-type Password',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
-                  child: CommonImageView(
-                    imagePath: Assets.imagesPasswordIcon,
+                  child: SvgPicture.asset(
+                    Assets.passwordIcon,
                     height: 20,
                     width: 20,
-                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(kTextColorSecondary, BlendMode.srcIn),
                   ),
                 ),
-                suffix: Icon(Icons.visibility_off_outlined, color: Color(0xff7A8094), size: 18),
+                suffix: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isRetypedPasswordVisible = !_isRetypedPasswordVisible;
+                    });
+                  },
+                  child: Icon(
+                    _isRetypedPasswordVisible ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                    color: Color(0xff7A8094),
+                    size: 18,
+                  ),
+                ),
                 validator: (value) =>
                     validationService.validateMatchPassword(authController.passwordController.text.trim(), value!),
               ),

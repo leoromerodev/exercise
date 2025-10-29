@@ -60,9 +60,7 @@ class MyTextfield extends StatelessWidget {
       onTap: onTap,
       readOnly: readOnly!,
       keyboardType: keyboardType,
-      textAlignVertical: suffix != null || prefix != null
-          ? TextAlignVertical.center
-          : null,
+      textAlignVertical: suffix != null || prefix != null ? TextAlignVertical.center : null,
       maxLines: maxLines,
       controller: controller,
       onChanged: onChanged,
@@ -81,7 +79,7 @@ class MyTextfield extends StatelessWidget {
         fontFamily: AppFonts.montserrat,
       ),
       decoration: InputDecoration(
-        fillColor: fillColor ?? kWhiteColor,
+        fillColor: fillColor ?? kPrimaryColor,
         filled: true,
         hintText: hint,
         prefixIcon: prefix,
@@ -92,43 +90,24 @@ class MyTextfield extends StatelessWidget {
           fontWeight: hintWeight ?? FontWeight.w400,
           fontFamily: AppFonts.montserrat,
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: maxLines! > 1 ? 15 : 0,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: maxLines! > 1 ? 15 : 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
       ),
     );
   }
 }
-
-
-
-

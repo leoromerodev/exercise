@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
@@ -7,6 +8,7 @@ class CustomSearchField extends StatelessWidget {
   final TextEditingController? controller;
   final String hintText;
   final ValueChanged<String>? onChanged;
+  final Function(String)? onSubmit;
   final VoidCallback? onFilterTap;
 
   const CustomSearchField({
@@ -14,6 +16,7 @@ class CustomSearchField extends StatelessWidget {
     this.controller,
     this.hintText = 'Search...',
     this.onChanged,
+    this.onSubmit,
     this.onFilterTap,
   });
 
@@ -22,13 +25,23 @@ class CustomSearchField extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: MyTextfield(
-            controller: controller,
-            hint: hintText,
-            onChanged: onChanged,
-            prefix: const Padding(
-              padding: EdgeInsets.all(14),
-              child: Icon(Icons.search, color: Color(0xff7A8094)),
+          child: Container(
+            height: 40, // Reduced height constraint
+            decoration: BoxDecoration(
+              color: kSwitchInactiveColor, // Background color for search field
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: MyTextfield(
+              controller: controller,
+              hint: hintText,
+              onChanged: onChanged,
+              textInputAction: TextInputAction.search,
+              onSubmit: onSubmit,
+              fillColor: Colors.transparent, // Make MyTextfield transparent to show container background
+              prefix: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(Icons.search, color: Color(0xff7A8094)),
+              ),
             ),
           ),
         ),
@@ -38,16 +51,9 @@ class CustomSearchField extends StatelessWidget {
             onTap: onFilterTap,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SvgPicture.asset(
-                Assets.imagesFilterIcon,
-                height: 24,
-                width: 24,
-              ),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: kSwitchInactiveColor, borderRadius: BorderRadius.circular(8)),
+              child: SvgPicture.asset(Assets.imagesFilterIcon, height: 24, width: 24),
             ),
           ),
         ],
@@ -55,7 +61,3 @@ class CustomSearchField extends StatelessWidget {
     );
   }
 }
-
-
-
-

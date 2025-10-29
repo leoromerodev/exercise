@@ -209,7 +209,7 @@ class AuthController extends GetxController {
   Future<void> completeUserProfile({required UserModel user, required BuildContext context}) async {
     dialogService.showProgressDialog(context: context);
 
-    final userProfile = await _userService.completeUserProfile(user: user);
+    final userProfile = await _userService.completeUserProfile(email: user.email!.emailAddress.toString(), user: user);
 
     if (userProfile != null && (userProfile.statusCode == 200 || userProfile.statusCode == 201)) {
       userModelGlobal.value = userProfile;

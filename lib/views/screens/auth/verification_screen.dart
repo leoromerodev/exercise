@@ -54,7 +54,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 120),
             Center(
               child: MyText(text: 'Enter your code', weight: FontWeight.w700, size: 20),
             ),

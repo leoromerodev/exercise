@@ -33,12 +33,14 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
+    - assets/icons/
     - assets/fonts/
     - .env
 
@@ -62,6 +64,23 @@ flutter:
 
 flutter_assets:
   assets_path: assets/images/
+  icons_path: assets/icons/
   output_path: lib/constants/
   filename: app_images.dart
   field_prefix: ""
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/appIcon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/appIcon.png"
+    background_color: "#06222F"
+    theme_color: "#06222F"
+  windows:
+    generate: true
+    image_path: "assets/images/appIcon.png"
+    icon_size: 48
