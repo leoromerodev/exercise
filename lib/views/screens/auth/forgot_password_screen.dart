@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/constants/app_sizes.dart';
 import 'package:heavek/controllers/auth_controller.dart';
 import 'package:heavek/utils/global_instances.dart';
-import 'package:heavek/views/widgets/common_image_view.dart';
 import 'package:heavek/views/widgets/my_button.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_textfield.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  ForgotPasswordScreen({super.key});
+  const ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -20,7 +20,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocusNode = FocusNode();
-  
+
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
 
@@ -43,16 +43,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: AppSizes.DEFAULT,
+        padding: AppSizes.defaultPadding,
         child: Column(
           children: [
             const SizedBox(height: 60),
             Center(
-              child: MyText(
-                text: 'Forgot Password?',
-                weight: FontWeight.w700,
-                size: 20,
-              ),
+              child: MyText(text: 'Forgot Password?', weight: FontWeight.w700, size: 20),
             ),
             SizedBox(height: 20),
             Center(
@@ -76,11 +72,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 hint: 'test@email.com',
                 prefix: Padding(
                   padding: EdgeInsetsGeometry.all(14),
-                  child: CommonImageView(
-                    imagePath: Assets.imagesEmailIcon,
+                  child: SvgPicture.asset(
+                    Assets.mailIcon,
                     height: 20,
                     width: 20,
-                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(kTextColorSecondary, BlendMode.srcIn),
                   ),
                 ),
                 validator: (value) => validationService.emailValidator(value),

@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Flutter: Run with Auto Hot Reload",
+			"type": "shell",
+			"command": "flutter",
+			"args": [
+				"run",
+				"-d",
+				"YLGQFM4SBUVCA6LF",
+				"--hot"
+			],
+			"isBackground": true,
+			"problemMatcher": [
+				"$flutter"
+			],
+			"group": "build"
+		}
+	]
+}

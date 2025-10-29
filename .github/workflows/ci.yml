@@ -2,162 +2,162 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   android-build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-        
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.35.4'
-        channel: 'stable'
-        cache: true
-        
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.gradle/caches
-          ~/.gradle/wrapper
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
-          
-    - name: Cache Flutter packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.pub-cache
-        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pub-
-        
-    - name: Create .env file
-      run: |
-        echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
-        echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-        
-    - name: Setup Gradle properties
-      run: |
-        mkdir -p ~/.gradle
-        echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m" >> ~/.gradle/gradle.properties
-        echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
-        echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
-        echo "org.gradle.configureondemand=false" >> ~/.gradle/gradle.properties
-        echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
-        
-    - name: Setup Android SDK
-      run: |
-        flutter doctor
-        flutter config --android-sdk $ANDROID_HOME
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        
-    - name: Get dependencies
-      run: flutter pub get
-      
-    - name: Analyze code
-      run: flutter analyze --no-fatal-infos
-      
-    - name: Run tests
-      run: flutter test
-      
-    - name: Make Gradle wrapper executable
-      run: chmod +x android/gradlew
-      
-    - name: Validate Gradle and Android setup
-      run: |
-        cd android
-        ./gradlew --version
-        echo "ANDROID_HOME: $ANDROID_HOME"
-        echo "JAVA_HOME: $JAVA_HOME"
-        ls -la $ANDROID_HOME/licenses/ || echo "Android licenses not found"
-      
-    - name: Download Gradle dependencies
-      run: |
-        cd android
-        ./gradlew dependencies --configuration implementation
-      continue-on-error: true
-      
-    - name: Build APK with retry
-      uses: nick-fields/retry@v3
-      with:
-        timeout_minutes: 15
-        max_attempts: 3
-        retry_wait_seconds: 30
-        command: flutter build apk --debug --verbose
-      
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-apk
-        path: build/app/outputs/flutter-apk/app-debug.apk
-        retention-days: 3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.4"
+          channel: "stable"
+          cache: true
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Flutter packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Create .env file
+        run: |
+          echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
+          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+
+      - name: Setup Gradle properties
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m" >> ~/.gradle/gradle.properties
+          echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.parallel=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.configureondemand=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+
+      - name: Setup Android SDK
+        run: |
+          flutter doctor
+          flutter config --android-sdk $ANDROID_HOME
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x android/gradlew
+
+      - name: Validate Gradle and Android setup
+        run: |
+          cd android
+          ./gradlew --version
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          ls -la $ANDROID_HOME/licenses/ || echo "Android licenses not found"
+
+      - name: Download Gradle dependencies
+        run: |
+          cd android
+          ./gradlew dependencies --configuration implementation
+        continue-on-error: true
+
+      - name: Build APK with retry
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: flutter build apk --debug --verbose
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 3
 
   ios-build:
     runs-on: macos-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.35.4'
-        channel: 'stable'
-        cache: true
-        
-    - name: Cache Flutter packages
-      uses: actions/cache@v4
-      with:
-        path: ~/.pub-cache
-        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pub-
-        
-    - name: Create .env file
-      run: |
-        echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
-        echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
-        
-    - name: Get dependencies
-      run: flutter pub get
-      
-    - name: Analyze code
-      run: flutter analyze --no-fatal-infos
-      
-    - name: Run tests
-      run: flutter test
-      
-    - name: Setup iOS Simulator
-      run: |
-        xcrun simctl list devices
-        xcrun simctl boot "iPhone 15" || true
-        
-    - name: Build iOS (no signing) with retry
-      uses: nick-fields/retry@v3
-      with:
-        timeout_minutes: 20
-        max_attempts: 2
-        retry_wait_seconds: 30
-        command: flutter build ios --no-codesign --debug --verbose
-      
-    - name: Upload iOS artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: debug-ios
-        path: build/ios/iphoneos/Runner.app
-        retention-days: 3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.4"
+          channel: "stable"
+          cache: true
+
+      - name: Cache Flutter packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Create .env file
+        run: |
+          echo "APP_USERNAME=${{ secrets.APP_USERNAME }}" > .env
+          echo "APP_SECRET=${{ secrets.APP_SECRET }}" >> .env
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze code
+        run: flutter analyze --no-fatal-infos
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Setup iOS Simulator
+        run: |
+          xcrun simctl list devices
+          xcrun simctl boot "iPhone 15" || true
+
+      - name: Build iOS (no signing) with retry
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 20
+          max_attempts: 2
+          retry_wait_seconds: 30
+          command: flutter build ios --no-codesign --debug --verbose
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-ios
+          path: build/ios/iphoneos/Runner.app
+          retention-days: 3

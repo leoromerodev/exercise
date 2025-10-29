@@ -3,11 +3,11 @@ import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/views/widgets/my_text.dart';
 
 class MyButton extends StatelessWidget {
-  MyButton({
+  const MyButton({super.key, 
     required this.buttonText,
     required this.onTap,
     this.bgColor = kSecondaryColor,
-    this.textColor = kWhiteColor,
+    this.textColor = kPrimaryColor,
     this.borderColor = kSecondaryColor,
     this.weight = FontWeight.w600,
     this.height = 48,
@@ -61,3 +61,7 @@ class MyButton extends StatelessWidget {
     );
   }
 }
+
+
+
+

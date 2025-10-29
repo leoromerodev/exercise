@@ -8,7 +8,7 @@ class RecordsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppSizes.DEFAULT,
+      padding: AppSizes.defaultPadding,
       child: Column(
         children: [
           const SizedBox(height: 60),
@@ -18,3 +18,7 @@ class RecordsScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:heavek/constants/app_colors.dart';
+import 'package:heavek/constants/app_fonts.dart';
 import 'package:heavek/constants/app_images.dart';
 import 'package:heavek/views/screens/account/account_screen.dart';
 import 'package:heavek/views/screens/analytics/analytics_screen.dart';
@@ -22,13 +24,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   void initState() {
     super.initState();
-    items = [
-      HomeScreen(),
-      WorkoutScreen(),
-      RecordsScreen(),
-      AnalyticsScreen(),
-      AccountScreen(),
-    ];
+    items = [HomeScreen(), WorkoutScreen(), RecordsScreen(), AnalyticsScreen(), AccountScreen()];
   }
 
   @override
@@ -55,23 +51,23 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      height: 100,
-      color: Colors.transparent,
-      padding: EdgeInsets.only(bottom: 8, left: 10, right: 10, top: 16),
-      elevation: 0.0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: kSecondaryColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        // height: 64,
+    return Container(
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 10, offset: Offset(0, -3), spreadRadius: 0),
+        ],
+      ),
+      child: BottomAppBar(
+        height: 70,
+        color: kPrimaryColor,
+        padding: EdgeInsets.all(10),
+        elevation: 0.0,
         child: Row(
           children: [
-            navItem(0, pageIndex == 0, 'Home', onTap: () => onTap(0)),
-            navItem(1, pageIndex == 1, 'Workout', onTap: () => onTap(1)),
+            navItem(0, pageIndex == 0, 'Pulse', onTap: () => onTap(0)),
+            navItem(1, pageIndex == 1, 'Build', onTap: () => onTap(1)),
             navItem(2, pageIndex == 2, 'Records', onTap: () => onTap(2)),
-            navItem(3, pageIndex == 3, 'Analytics', onTap: () => onTap(3)),
+            navItem(3, pageIndex == 3, 'Stats', onTap: () => onTap(3)),
             navItem(4, pageIndex == 4, 'Account', onTap: () => onTap(4)),
           ],
         ),
@@ -80,14 +76,11 @@ class NavBar extends StatelessWidget {
   }
 
   final List<List<String>> _iconPaths = [
-    [Assets.imagesSelectedHomeIcon, Assets.imagesSelectedHomeIcon],
-    [Assets.imagesUnselectedWorkoutIcon, Assets.imagesUnselectedWorkoutIcon],
-    [Assets.imagesUnselectedRecordsIcon, Assets.imagesUnselectedRecordsIcon],
-    [
-      Assets.imagesUnselectedAnalyticsIcon,
-      Assets.imagesUnselectedAnalyticsIcon,
-    ],
-    [Assets.imagesUnselectedAccountIcon, Assets.imagesUnselectedAccountIcon],
+    [Assets.pulseIcon, Assets.pulseIcon], // Home - using pulse SVG
+    [Assets.buildIcon, Assets.buildIcon], // Workout - using build SVG
+    [Assets.recordsIcon, Assets.recordsIcon], // Records - using records SVG
+    [Assets.statsIcon, Assets.statsIcon], // Analytics - using stats SVG
+    [Assets.accountIcon, Assets.accountIcon], // Account - using account SVG
   ];
 
   Widget navItem(int index, bool selected, String title, {Function()? onTap}) {
@@ -98,44 +91,39 @@ class NavBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             selected
-                ? Container(
-                    height: 55,
-                    width: 55,
-                    decoration: BoxDecoration(
-                      color: kSelectedColor,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          _iconPaths[index][selected ? 1 : 0],
-                          height: 20,
-                          width: 20,
-                          color: kWhiteColor,
-                        ),
-                        MyText(
-                          text: title,
-                          weight: FontWeight.w500,
-                          size: 10,
-                          color: kWhiteColor,
-                          paddingTop: 4,
-                        ),
-                      ],
-                    ),
-                  )
-                : Column(
+                ? Column(
                     children: [
-                      Image.asset(
+                      SvgPicture.asset(
                         _iconPaths[index][selected ? 1 : 0],
-                        height: 20,
-                        width: 20,
+                        height: 30,
+                        width: 30,
+                        colorFilter: ColorFilter.mode(
+                          selected ? kSelectedNavBarItem : kUnselectedNavBarItem,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       MyText(
                         text: title,
-                        weight: FontWeight.w500,
+                        weight: AppFontWeight.bold,
                         size: 10,
-                        color: kWhiteColor.withValues(alpha: 0.8),
+                        color: selected ? kSelectedNavBarItem : kUnselectedNavBarItem,
+                        paddingTop: 4,
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      SvgPicture.asset(
+                        _iconPaths[index][selected ? 1 : 0],
+                        height: 25,
+                        width: 25,
+                        colorFilter: ColorFilter.mode(kUnselectedNavBarItem, BlendMode.srcIn),
+                      ),
+                      MyText(
+                        text: title,
+                        weight: AppFontWeight.regular,
+                        size: 10,
+                        color: kUnselectedNavBarItem,
                         paddingTop: 4,
                       ),
                     ],

@@ -18,25 +18,29 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   cached_network_image: ^3.4.1
   flutter_svg: ^2.2.1
+  path_drawing: ^1.0.1
+  xml: ^6.5.0
   image_picker: ^1.2.0
   pinput: ^5.0.2
   http: ^1.5.0
   connectivity_plus: ^7.0.0
   flutter_dotenv: ^6.0.0
   intl: ^0.20.2
-  permission_handler: ^11.3.1
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
+    - assets/icons/
     - assets/fonts/
     - .env
 
@@ -60,6 +64,23 @@ flutter:
 
 flutter_assets:
   assets_path: assets/images/
+  icons_path: assets/icons/
   output_path: lib/constants/
   filename: app_images.dart
   field_prefix: ""
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/appIcon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/appIcon.png"
+    background_color: "#06222F"
+    theme_color: "#06222F"
+  windows:
+    generate: true
+    image_path: "assets/images/appIcon.png"
+    icon_size: 48

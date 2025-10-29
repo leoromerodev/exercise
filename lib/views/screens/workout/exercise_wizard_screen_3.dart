@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
+import 'package:heavek/views/widgets/muscle_selector.dart';
 import 'exercise_details_screen.dart';
 import 'exercise_wizard_screen_4.dart';
 
@@ -12,17 +14,22 @@ class ExerciseWizardScreen3 extends StatefulWidget {
   final String exerciseName;
   final Map<String, dynamic>? previousData;
 
-  const ExerciseWizardScreen3({
-    Key? key,
-    required this.exerciseName,
-    this.previousData,
-  }) : super(key: key);
+  const ExerciseWizardScreen3({Key? key, required this.exerciseName, this.previousData}) : super(key: key);
 
   @override
   State<ExerciseWizardScreen3> createState() => _ExerciseWizardScreen3State();
 }
 
 class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
+  // Selection storage for muscles
+  Set<String> selectedMuscles = {};
+
+  void _onMuscleSelectionChanged(Set<String> muscles) {
+    setState(() {
+      selectedMuscles = muscles;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,23 +48,17 @@ class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
           size: 18,
           weight: AppFontWeight.bold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: IconButton(
-              icon: const Icon(
-                Icons.remove_red_eye_outlined,
-                color: kTextColorPrimary,
-              ),
+              icon: const Icon(Icons.remove_red_eye_outlined, color: kTextColorPrimary),
               onPressed: () {
                 Get.to(
-                  () => ExerciseDetailsScreen(
-                    exerciseName: widget.exerciseName,
-                    mode: ExerciseDetailsMode.preview,
-                  ),
+                  () => ExerciseDetailsScreen(exerciseName: widget.exerciseName, mode: ExerciseDetailsMode.preview),
                 );
               },
             ),
@@ -88,86 +89,18 @@ class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
                 size: 12,
                 weight: AppFontWeight.medium,
                 color: kTextColorPrimary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 8.0),
 
-            // Main Content Section
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MyText(
-                    text: 'Exercise Step 3',
-                    size: 18,
-                    weight: AppFontWeight.semiBold,
-                    color: kTextColorPrimary,
-                    fontFamily: AppFonts.Montserrat,
-                  ),
-                  const SizedBox(height: 8),
-                  MyText(
-                    text: 'Configure step 3 parameters and settings.',
-                    size: 13,
-                    weight: AppFontWeight.regular,
-                    color: kTextColorSecondary,
-                    fontFamily: AppFonts.OpenSans,
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  // Placeholder content - you can add more sections here
-                  Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: kMediaUploadBackgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!, width: 1),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.settings_outlined,
-                            size: 48,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 12),
-                          MyText(
-                            text: 'Step 3 content',
-                            size: 14,
-                            weight: AppFontWeight.medium,
-                            color: Colors.grey[500]!,
-                          ),
-                          const SizedBox(height: 4),
-                          MyText(
-                            text: 'Content to be added',
-                            size: 12,
-                            weight: AppFontWeight.regular,
-                            color: Colors.grey[400]!,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            // Muscle Selector Widget
+            MuscleSelector(
+              selectedMuscles: selectedMuscles,
+              onSelectionChanged: _onMuscleSelectionChanged,
+              showSubheading: true,
             ),
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 20.0),
 
             // Action Buttons
             Column(
@@ -180,16 +113,9 @@ class _ExerciseWizardScreen3State extends State<ExerciseWizardScreen3> {
                       onPressed: () => _onContinue(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: MyText(
-                        text: 'Continue',
-                        size: 16,
-                        weight: FontWeight.w600,
-                        color: kPrimaryColor,
-                      ),
+                      child: MyText(text: 'Continue', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                     ),
                   ),
                 ),

@@ -4,7 +4,7 @@ import 'package:heavek/constants/app_fonts.dart';
 
 class MyTextfield extends StatelessWidget {
   const MyTextfield({
-    Key? key,
+    super.key,
     this.controller,
     this.hint,
     this.onChanged,
@@ -28,7 +28,7 @@ class MyTextfield extends StatelessWidget {
     this.validator,
     this.focusNode,
     this.onSubmit,
-  }) : super(key: key);
+  });
   final String? hint, heading;
 
   final TextEditingController? controller;
@@ -60,9 +60,7 @@ class MyTextfield extends StatelessWidget {
       onTap: onTap,
       readOnly: readOnly!,
       keyboardType: keyboardType,
-      textAlignVertical: suffix != null || prefix != null
-          ? TextAlignVertical.center
-          : null,
+      textAlignVertical: suffix != null || prefix != null ? TextAlignVertical.center : null,
       maxLines: maxLines,
       controller: controller,
       onChanged: onChanged,
@@ -78,10 +76,10 @@ class MyTextfield extends StatelessWidget {
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: kTextColorPrimary,
-        fontFamily: AppFonts.Montserrat,
+        fontFamily: AppFonts.montserrat,
       ),
       decoration: InputDecoration(
-        fillColor: fillColor ?? kWhiteColor,
+        fillColor: fillColor ?? kPrimaryColor,
         filled: true,
         hintText: hint,
         prefixIcon: prefix,
@@ -90,39 +88,24 @@ class MyTextfield extends StatelessWidget {
           fontSize: hintSize ?? 14,
           color: hintColor ?? kHintColor,
           fontWeight: hintWeight ?? FontWeight.w400,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: maxLines! > 1 ? 15 : 0,
-        ),
+        contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: maxLines! > 1 ? 15 : 0),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
-          borderSide: BorderSide(
-            width: 1,
-            color: Color(0xff4A739C).withValues(alpha: 0.14),
-          ),
+          borderSide: BorderSide(width: 1, color: Color(0xff4A739C).withValues(alpha: 0.14)),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heavek/constants/app_colors.dart';
 import 'package:heavek/constants/app_fonts.dart';
+import 'package:heavek/controllers/exercise_controller.dart';
 
 import 'package:heavek/views/widgets/my_text.dart';
 import 'package:heavek/views/widgets/my_border_button.dart';
@@ -11,11 +12,7 @@ class ExerciseWizardScreen7 extends StatefulWidget {
   final String exerciseName;
   final Map<String, dynamic>? previousData;
 
-  const ExerciseWizardScreen7({
-    Key? key,
-    required this.exerciseName,
-    this.previousData,
-  }) : super(key: key);
+  const ExerciseWizardScreen7({Key? key, required this.exerciseName, this.previousData}) : super(key: key);
 
   @override
   State<ExerciseWizardScreen7> createState() => _ExerciseWizardScreen7State();
@@ -40,7 +37,7 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
           size: 18,
           weight: AppFontWeight.bold,
           color: kTextColorPrimary,
-          fontFamily: AppFonts.Montserrat,
+          fontFamily: AppFonts.montserrat,
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -68,7 +65,7 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
                 size: 12,
                 weight: AppFontWeight.medium,
                 color: kTextColorPrimary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
             ),
             const SizedBox(height: 10.0),
@@ -81,11 +78,7 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
                 ],
               ),
               child: Column(
@@ -96,16 +89,15 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
                     size: 18,
                     weight: AppFontWeight.semiBold,
                     color: kTextColorPrimary,
-                    fontFamily: AppFonts.Montserrat,
+                    fontFamily: AppFonts.montserrat,
                   ),
                   const SizedBox(height: 8),
                   MyText(
-                    text:
-                        'Review all settings and complete the exercise creation.',
+                    text: 'Review all settings and complete the exercise creation.',
                     size: 13,
                     weight: AppFontWeight.regular,
                     color: kTextColorSecondary,
-                    fontFamily: AppFonts.OpenSans,
+                    fontFamily: AppFonts.openSans,
                   ),
                   const SizedBox(height: 20.0),
 
@@ -122,11 +114,7 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.task_alt_outlined,
-                            size: 48,
-                            color: Colors.grey[400],
-                          ),
+                          Icon(Icons.task_alt_outlined, size: 48, color: Colors.grey[400]),
                           const SizedBox(height: 12),
                           MyText(
                             text: 'Exercise Summary',
@@ -161,16 +149,9 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
                       onPressed: () => _onPreview(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: kSecondaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
-                      child: MyText(
-                        text: 'Preview',
-                        size: 16,
-                        weight: FontWeight.w600,
-                        color: kPrimaryColor,
-                      ),
+                      child: MyText(text: 'Preview', size: 16, weight: FontWeight.w600, color: kPrimaryColor),
                     ),
                   ),
                 ),
@@ -199,11 +180,6 @@ class _ExerciseWizardScreen7State extends State<ExerciseWizardScreen7> {
 
   void _onPreview() {
     // Navigate to exercise details screen in edit mode
-    Get.to(
-      () => ExerciseDetailsScreen(
-        exerciseName: widget.exerciseName,
-        mode: ExerciseDetailsMode.edit,
-      ),
-    );
+    Get.to(() => ExerciseDetailsScreen(exerciseName: widget.exerciseName, mode: ExerciseDetailsMode.edit));
   }
 }

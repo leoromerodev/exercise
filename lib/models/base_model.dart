@@ -5,23 +5,14 @@ class BaseModel {
   final int statusCode;
   final List<String> messages;
 
-  BaseModel({
-    required this.statusCode,
-    required this.messages,
-  });
+  BaseModel({required this.statusCode, required this.messages});
 
   factory BaseModel.fromMap(Map<String, dynamic> map) {
-    return BaseModel(
-      statusCode: map['statusCode'] ?? 0,
-      messages: List<String>.from(map['messages'] ?? []),
-    );
+    return BaseModel(statusCode: map['statusCode'] ?? 0, messages: List<String>.from(map['messages'] ?? []));
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'statusCode': statusCode,
-      'messages': messages,
-    };
+    return {'statusCode': statusCode, 'messages': messages};
   }
 
   factory BaseModel.fromJson(String source) {
@@ -38,10 +29,8 @@ class BaseModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    
-    return other is BaseModel &&
-      other.statusCode == statusCode &&
-      listEquals(other.messages, messages);
+
+    return other is BaseModel && other.statusCode == statusCode && listEquals(other.messages, messages);
   }
 
   @override

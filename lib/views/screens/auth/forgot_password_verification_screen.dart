@@ -9,7 +9,7 @@ import 'package:heavek/views/widgets/my_text.dart';
 import 'package:pinput/pinput.dart';
 
 class ForgotPasswordVerificationScreen extends StatefulWidget {
-  ForgotPasswordVerificationScreen({super.key});
+  const ForgotPasswordVerificationScreen({super.key});
 
   @override
   State<ForgotPasswordVerificationScreen> createState() => _ForgotPasswordVerificationScreenState();
@@ -18,7 +18,7 @@ class ForgotPasswordVerificationScreen extends StatefulWidget {
 class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _pinFocusNode = FocusNode();
-  
+
   // Get AuthController instance
   AuthController get authController => Get.find<AuthController>();
 
@@ -42,11 +42,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
     final defaultPinTheme = PinTheme(
       width: 60,
       height: 60,
-      textStyle: const TextStyle(
-        fontSize: 22,
-        color: Colors.black87,
-        fontWeight: FontWeight.w600,
-      ),
+      textStyle: const TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
         border: Border.all(color: Color(0xff05212F).withValues(alpha: 0.14)),
         borderRadius: BorderRadius.circular(12),
@@ -54,17 +50,13 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
     );
     return Scaffold(
       body: Padding(
-        padding: AppSizes.DEFAULT,
+        padding: AppSizes.defaultPadding,
 
         child: Column(
           children: [
-            const SizedBox(height: 60),
+            const SizedBox(height: 120),
             Center(
-              child: MyText(
-                text: 'Enter your code',
-                weight: FontWeight.w700,
-                size: 20,
-              ),
+              child: MyText(text: 'Enter your code', weight: FontWeight.w700, size: 20),
             ),
             SizedBox(height: 20),
             Center(
@@ -85,9 +77,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
                 length: 6, // number of boxes
                 defaultPinTheme: defaultPinTheme,
                 focusedPinTheme: defaultPinTheme.copyWith(
-                  decoration: defaultPinTheme.decoration!.copyWith(
-                    border: Border.all(color: Colors.blue, width: 2),
-                  ),
+                  decoration: defaultPinTheme.decoration!.copyWith(border: Border.all(color: Colors.blue, width: 2)),
                 ),
                 submittedPinTheme: defaultPinTheme,
                 // Set pre-filled value
@@ -125,12 +115,7 @@ class _ForgotPasswordVerificationScreenState extends State<ForgotPasswordVerific
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                MyText(
-                  text: 'Didn’t get the code? ',
-                  color: kLightTextColor,
-                  weight: FontWeight.w500,
-                  size: 14,
-                ),
+                MyText(text: 'Didn’t get the code? ', color: kLightTextColor, weight: FontWeight.w500, size: 14),
                 MyText(
                   text: 'Send Again',
                   color: kHighlightColor,

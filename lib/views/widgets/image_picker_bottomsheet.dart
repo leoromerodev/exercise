@@ -6,10 +6,10 @@ import 'package:heavek/views/widgets/my_text.dart';
 
 class ImagePickerBottomSheet extends StatelessWidget {
   const ImagePickerBottomSheet({
-    Key? key,
+    super.key,
     required this.onCameraPick,
     required this.onGalleryPick,
-  }) : super(key: key);
+  });
 
   final VoidCallback onCameraPick;
   final VoidCallback onGalleryPick;
@@ -93,3 +93,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
     );
   }
 }
+
+
+
+

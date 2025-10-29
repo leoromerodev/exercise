@@ -66,3 +66,7 @@ extension VATValidation on String {
     return RegExp(r'^DE\d{9}$').hasMatch(this);
   }
 }
+
+
+
+

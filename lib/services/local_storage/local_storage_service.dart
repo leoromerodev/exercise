@@ -13,9 +13,9 @@ class LocalStorageService {
   }
 
   Future<void> writeString({required String key, required String value}) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await _prefs.setString(key, value);
+    await prefs.setString(key, value);
     log('String written to local storage');
   }
 
@@ -26,8 +26,8 @@ class LocalStorageService {
   }
 
   Future<String?> readString({required String key}) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    return _prefs.getString(key);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
   }
 
   Future<String?> readSecureString({required String key}) async {
@@ -36,8 +36,8 @@ class LocalStorageService {
   }
 
   Future<void> deleteKey({required String key}) async {
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
-    await _prefs.remove(key);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
     log('deleted from local storage');
   }
 

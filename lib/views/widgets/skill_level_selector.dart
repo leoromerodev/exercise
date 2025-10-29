@@ -52,7 +52,7 @@ class _SkillLevelSelectorState extends State<SkillLevelSelector> {
                 size: 18,
                 weight: AppFontWeight.semiBold,
                 color: kTextColorPrimary,
-                fontFamily: AppFonts.Montserrat,
+                fontFamily: AppFonts.montserrat,
               ),
               if (widget.isCollapsible)
                 GestureDetector(

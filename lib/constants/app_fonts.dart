@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 class AppFonts {
-  static final Montserrat = "Montserrat";
-  static final Manrope = "Manrope";
-  static final OpenSans = "Open Sans";
+  static final montserrat = "Montserrat";
+  static final manrope = "Manrope";
+  static final openSans = "Open Sans";
 }
 
 class AppFontWeight {
